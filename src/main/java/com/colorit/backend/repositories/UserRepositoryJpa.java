@@ -42,19 +42,26 @@ public class UserRepositoryJpa {
 
     public List<UserEntity> getUsers(Integer limit, Integer offset) {
         return entityManager.createQuery(
-                "SELECT u  FROM UserEntity u join GameResults g on (u.gameResults = g) ORDER by g.rating DESC",
+                "SELECT u  FROM UserEntity u join GameResults g on (u.gameResults = g) ORDER by g.rating DESC, "
+                        + "u.nickname ASC",
                 UserEntity.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList();
     }
 
-    public Integer getPosition(String nickname) {
+    public Long getPosition(String nickname) {
         return entityManager.createQuery(
                 "SELECT COUNT(u) FROM UserEntity u join GameResults g on (u.gameResults = g) "
                         + "WHERE u.gameResults.rating > (SELECT u1.gameResults.rating "
                         + "FROM UserEntity u1 join GameResults g on (u1.gameResults = g) "
-                        + "WHERE u1.nickname = :nickname)", Integer.class)
+                        + "WHERE u1.nickname = :nickname)", Long.class)
+                .setParameter("nickname", nickname)
+                .getSingleResult() + entityManager.createQuery("SELECT COUNT(u) "
+                + "FROM UserEntity u join GameResults g on (u.gameResults = g) "
+                + "WHERE u.gameResults.rating = (SELECT u1.gameResults.rating "
+                + "FROM UserEntity u1 join GameResults g on (u1.gameResults = g) "
+                + "WHERE u1.nickname = :nickname AND u.nickname < u1.nickname)", Long.class)
                 .setParameter("nickname", nickname)
                 .getSingleResult();
     }
