@@ -26,6 +26,17 @@ public class UserServiceJpa implements IUserService {
     }
 
     @Override
+    public UserServiceResponse getUserEntity(String nickname) {
+        if (userRepositoryJpa.existsByNickname(nickname)) {
+            final UserEntity userEntity = userRepositoryJpa.getByNickname(nickname);
+            LOGGER.info("info returned about user {}", nickname);
+            return new UserServiceResponse<>(UserServiceStatus.OK_STATE, userEntity);
+        } else {
+            return new UserServiceResponse(UserServiceStatus.NOT_FOUND_STATE);
+        }
+    }
+
+    @Override
     public UserServiceResponse getUser(String nickname) {
         if (userRepositoryJpa.existsByNickname(nickname)) {
             final UserEntity userEntity = userRepositoryJpa.getByNickname(nickname);
