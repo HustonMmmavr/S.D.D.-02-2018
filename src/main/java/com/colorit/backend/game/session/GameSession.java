@@ -3,15 +3,13 @@ package com.colorit.backend.game.session;
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.gameobjects.GameField;
-import com.colorit.backend.game.gameobjects.Point;
+import com.colorit.backend.game.gameobjects.GameObject;
+import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.game.gameobjects.players.Player;
 import com.colorit.backend.game.messages.Position;
-import com.colorit.backend.services.IUserService;
 import com.colorit.backend.websocket.RemotePointService;
-import org.apache.commons.collections.ArrayStack;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class GameSession {
-//    private static final Logger
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameSession.class);
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
     private static final int FULL_PARTY = 2;
     // TODO
@@ -55,12 +53,11 @@ public class GameSession {
 
     public void addUser(Id<UserEntity> userId) {
         users.add(userId);
-
-        players.add(new Player(userId.toString(), users.size()));
+        players.add(new Player(userId.getAdditionalInfo()));
     }
 
-    public void movePlayers() {
-        players.forEach(Player::move);
+    public void movePlayers(long delay) {
+        players.forEach(player -> player.move((double) delay));
     }
 
     public void sendGameInfo() {
@@ -73,7 +70,7 @@ public class GameSession {
                 remotePointService.sendMessageToUser(user, position);
             }
         } catch (IOException ex) {
-            System.out.print("error");
+            LOGGER.error("error send info");
         }
     }
 

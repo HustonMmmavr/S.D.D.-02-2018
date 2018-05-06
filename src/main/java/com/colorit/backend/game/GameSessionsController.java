@@ -33,7 +33,7 @@ public class GameSessionsController {
     public void addUser(Id<UserEntity> userId) {
         currentSession.addUser(userId);
         try {
-            remotePointService.sendMessageToUser( userId, new Connected("hi"));
+            remotePointService.sendMessageToUser( userId, new Connected("hi " + userId.getAdditionalInfo()));
         } catch (IOException ignore) {
 
         }

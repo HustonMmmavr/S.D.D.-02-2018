@@ -15,9 +15,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(GameStart.class),
         @Type(Position.class),
         @Type(GameStart.class)
-//        @Type(InitGame.Request.class),
-//        @Type(ClientSnap.class),
-//        @Type(ServerSnap.class),
 //        @Type(FinishGame.class),
 })
 public abstract class Message {

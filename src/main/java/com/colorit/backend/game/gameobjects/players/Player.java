@@ -1,42 +1,42 @@
 package com.colorit.backend.game.gameobjects.players;
 
 import com.colorit.backend.game.gameobjects.Direction;
-import com.colorit.backend.game.gameobjects.Point;
+import com.colorit.backend.game.gameobjects.GameObject;
+import com.colorit.backend.game.gameobjects.math.Point;
 
 import static com.colorit.backend.game.GameConfig.*;
 
-public class Player {
+public class Player extends GameObject {
     protected String nickname;
-    protected Integer id;
     protected Integer score;
     protected Direction currentDirection;
     protected Direction newDirection;
-    protected Point<Integer> currentPosition;
+    protected Point<Double> currentPosition;
     protected Integer velocity = DEFAULT_VELOCITY;
 
-    public Player(String nickname, Integer id) {
+    public Player(String nickname) {
         this.nickname = nickname;
         this.score = 0;
-        this.id = id;
-        if (id == 1) {
-            currentPosition = new Point<>(50,50);
+        if (id.getId() == 1) {
+            currentPosition = new Point<>(50.0,50.0);
             this.currentDirection = Direction.RIGHT;
-        } else if (id == 2) {
-            currentPosition = new Point<>( 750,50);
+        } else if (id.getId() == 2) {
+            currentPosition = new Point<>( 750.0,50.0);
             this.currentDirection = Direction.DOWN;
-        } else if (id == 3) {
-            currentPosition = new Point<>(750,750);
+        } else if (id.getId() == 3) {
+            currentPosition = new Point<>(750.0,750.0);
             this.currentDirection = Direction.LEFT;
         } else {
-            currentPosition = new Point<>(50,750);
+            currentPosition = new Point<>(50.0,750.0);
             this.currentDirection = Direction.UP;
         }
         this.newDirection = currentDirection;
     }
 
-    public  void move() {
+    public  void move(double timeDelay) {
+        final Double newVelocity = velocity * timeDelay;
         if (currentDirection == Direction.RIGHT) {
-            currentPosition.setX(currentPosition.getX() + velocity);
+            currentPosition.setX(currentPosition.getX() + newVelocity);
         }
         if (currentDirection == Direction.DOWN) {
             currentPosition.setY(currentPosition.getY() + velocity);
@@ -48,8 +48,8 @@ public class Player {
             currentPosition.setY(currentPosition.getY() - velocity);
         }
 
-        Integer minCoordinate = SQUARE_SIZE / 2;
-        Integer maxCoordinate = SQUARE_SIZE * DEFAULT_FILED_SIZE - minCoordinate;
+        Double minCoordinate = (double)(SQUARE_SIZE / 2);
+        Double maxCoordinate = SQUARE_SIZE * DEFAULT_FILED_SIZE - minCoordinate;
 
         if (currentPosition.getX() < minCoordinate) {
             currentPosition.setX(minCoordinate);

@@ -1,6 +1,6 @@
 package com.colorit.backend.game.messages;
 
-import com.colorit.backend.game.gameobjects.Point;
+import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.websocket.Message;
 
 import java.util.List;

@@ -7,9 +7,12 @@ import com.colorit.backend.game.gameobjects.Direction;
 import javax.validation.constraints.NotNull;
 
 public interface IGameMechanics {
+    // TODO fix
+    void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull Object clientSnap);
+
     void changeDirection(@NotNull Id<UserEntity> userId, @NotNull Direction direction);
 
-    void gmStep(long frameTime);
+    void gameStep(long frameTime);
 
     void reset();
 }

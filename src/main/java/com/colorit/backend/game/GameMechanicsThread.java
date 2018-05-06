@@ -51,7 +51,7 @@ public class GameMechanicsThread implements Runnable {
             try {
                 final long before = clock.millis();
 
-                gameMechanics.gmStep(lastFrameMillis);
+                gameMechanics.gameStep(lastFrameMillis);
 
                 final long after = clock.millis();
                 try {

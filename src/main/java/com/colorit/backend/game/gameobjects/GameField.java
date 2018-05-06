@@ -3,7 +3,7 @@ package com.colorit.backend.game.gameobjects;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameField {
+public class GameField extends GameObject {
     private Integer matrixRank;
     private Integer INITIAL_FIELD_VALUE = 0;
     private List<List<Integer>> matrix;

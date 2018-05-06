@@ -59,6 +59,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
         }
         UserEntity userEntity = (UserEntity) userServiceResponse.getData();
         Id<UserEntity> uId = Id.of(userEntity.getId());
+        uId.setAdditionalInfo(nickname);
         idMap.put(nickname, uId);
         remotePointService.registerUser(uId, webSocketSession);
     }
@@ -70,6 +71,8 @@ public class GameSocketHandler extends TextWebSocketHandler {
         }
         final String nickname = (String) webSocketSession.getAttributes().get(SESSION_KEY);
         final UserServiceResponse userServiceResponse;
+
+        // todo check idMap
         if (nickname == null || !(userServiceResponse = userService.getUserEntity(nickname)).isValid()) {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
             return;
@@ -86,7 +89,9 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         try {
-            messageHandlerContainer.handle(message, Id.of(userProfile.getId()));
+//            Id<UserEntity> uId = Id.of(userProfile.getId());
+//            uId.setAdditionalInfo(userProfile.getNickname());
+            messageHandlerContainer.handle(message, idMap.get(userProfile.getNickname()));
         } catch (HandleException e) {
             LOGGER.error("Can't handle message of type " + message.getClass().getName() + " with content: " + text, e);
         }

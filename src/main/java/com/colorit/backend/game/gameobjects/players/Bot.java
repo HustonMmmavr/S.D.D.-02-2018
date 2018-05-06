@@ -1,12 +1,12 @@
 package com.colorit.backend.game.gameobjects.players;
 
 public class Bot extends Player {
-    Bot(String nickname, Integer id) {
-        super(nickname, id);
+    Bot(String nickname) {
+        super(nickname);
     }
 
     @Override
-    public void move() {
+    public void move(double delay) {
 
     }
 

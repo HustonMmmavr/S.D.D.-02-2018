@@ -26,16 +26,16 @@ public class RemotePointService {
         sessions.put(uId, webSocketSession);
     }
 
-    public boolean isConnected(@NotNull String nickname) {
-        return sessions.containsKey(nickname) && sessions.get(nickname).isOpen();
+    public boolean isConnected(@NotNull Id<UserEntity> uId) {//String nickname) {
+        return sessions.containsKey(uId) && sessions.get(uId).isOpen();
     }
 
     public void removeUser(@NotNull Id<UserEntity> uId) {
         sessions.remove(uId);
     }
 
-    public void cutDownConnection(@NotNull String nickname, @NotNull CloseStatus closeStatus) {
-        final WebSocketSession webSocketSession = sessions.get(nickname);
+    public void cutDownConnection(@NotNull Id<UserEntity> uId, @NotNull CloseStatus closeStatus) {
+        final WebSocketSession webSocketSession = sessions.get(uId);
         if (webSocketSession != null && webSocketSession.isOpen()) {
             try {
                 webSocketSession.close(closeStatus);

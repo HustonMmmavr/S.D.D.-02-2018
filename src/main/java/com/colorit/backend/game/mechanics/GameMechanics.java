@@ -15,6 +15,11 @@ import javax.validation.constraints.NotNull;
 @Service
 public class GameMechanics implements IGameMechanics {
 
+    @Override
+    public void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull Object clientSnap) {
+
+    }
+
     @NotNull
     private final GameSessionsController gameSessionsController;
     @NotNull
@@ -33,9 +38,9 @@ public class GameMechanics implements IGameMechanics {
 
 
     @Override
-    public void gmStep(long frameTime) {
+    public void gameStep(long frameTime) {
         for (GameSession gameSession: gameSessionsController.getGameSessions()) {
-            gameSession.movePlayers();
+            gameSession.movePlayers(frameTime);
             gameSession.sendGameInfo();
         }
     }
