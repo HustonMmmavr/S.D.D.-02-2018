@@ -51,7 +51,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
         final String nickname = (String) webSocketSession.getAttributes().get(SESSION_KEY);
-        final UserServiceResponse userServiceResponse = userService.getUserEntity(nickname));
+        final UserServiceResponse userServiceResponse = userService.getUserEntity(nickname);
         if (nickname == null || !userServiceResponse.isValid()) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
@@ -70,10 +70,10 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         final String nickname = (String) webSocketSession.getAttributes().get(SESSION_KEY);
-        final UserServiceResponse userServiceResponse;
+        final UserServiceResponse userServiceResponse = userService.getUserEntity(nickname);
 
         // todo check idMap
-        if (nickname == null || !(userServiceResponse = userService.getUserEntity(nickname)).isValid()) {
+        if (nickname == null || idMap.get(nickname) == null) {//!(userServiceResponse = userService.getUserEntity(nickname)).isValid()) {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
             return;
         }

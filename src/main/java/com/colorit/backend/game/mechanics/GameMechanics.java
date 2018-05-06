@@ -4,26 +4,29 @@ import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.GameSessionsController;
 import com.colorit.backend.game.gameobjects.Direction;
-import com.colorit.backend.game.mechanics.IGameMechanics;
+import com.colorit.backend.game.messages.ClientSnapshot;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
-import org.springframework.boot.autoconfigure.mongo.ReactiveMongoClientFactory;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 
 @Service
 public class GameMechanics implements IGameMechanics {
-
-    @Override
-    public void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull Object clientSnap) {
-
-    }
-
     @NotNull
     private final GameSessionsController gameSessionsController;
+
     @NotNull
     private final RemotePointService remotePointService;
+
+
+
+    @Override
+    public void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull ClientSnapshot clientSnap) {
+        final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
+        gameSession.changeDirection(userId, clientSnap.getDirection());
+
+    }
 
     GameMechanics(@NotNull GameSessionsController gameSessionsController,
                   @NotNull RemotePointService remotePointService) {

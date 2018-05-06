@@ -1,25 +1,27 @@
 package com.colorit.backend.game.gameobjects.math;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Point<T extends Number>  {
     private double x;
     private double y;
-    private Class<T> clazz;
+//    private Class<T> clazz;
 
-    public Point(T x, T y) {
+    public Point(@JsonProperty("x") T x, @JsonProperty("y") T y) {
         this.x = x.doubleValue();
         this.y = y.doubleValue();
     }
 
-    public T getX() {
-        return clazz.cast(x);
+    public Double getX() {
+        return x;
     }
 
     public void setX(T x) {
         this.x = x.doubleValue();
     }
 
-    public T getY() {
-        return clazz.cast(y);
+    public Double getY() {
+        return y;
     }
 
     public void setY(T y) {

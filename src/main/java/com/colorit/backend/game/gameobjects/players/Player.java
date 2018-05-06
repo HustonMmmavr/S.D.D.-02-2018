@@ -36,7 +36,7 @@ public class Player extends GameObject {
     public  void move(double timeDelay) {
         final Double newVelocity = velocity * timeDelay;
         if (currentDirection == Direction.RIGHT) {
-            currentPosition.setX(currentPosition.getX() + newVelocity);
+            currentPosition.setX(currentPosition.getX() + velocity);//newVelocity);
         }
         if (currentDirection == Direction.DOWN) {
             currentPosition.setY(currentPosition.getY() + velocity);
@@ -71,6 +71,11 @@ public class Player extends GameObject {
                 ((currentPosition.getY() - minCoordinate) % SQUARE_SIZE == 0)) {
             currentDirection = newDirection;
         }
+    }
+
+
+    public Integer getScore() {
+        return score;
     }
 
     public Point getPosition() {

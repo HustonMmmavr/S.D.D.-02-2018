@@ -1,6 +1,7 @@
 package com.colorit.backend.websocket;
 
 import com.colorit.backend.game.Connected;
+import com.colorit.backend.game.messages.ClientSnapshot;
 import com.colorit.backend.game.messages.GameStart;
 import com.colorit.backend.game.messages.JoinGame;
 import com.colorit.backend.game.messages.Position;
@@ -14,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(Connected.class),
         @Type(GameStart.class),
         @Type(Position.class),
-        @Type(GameStart.class)
+        @Type(GameStart.class),
+        @Type(ClientSnapshot.class)
 //        @Type(FinishGame.class),
 })
 public abstract class Message {

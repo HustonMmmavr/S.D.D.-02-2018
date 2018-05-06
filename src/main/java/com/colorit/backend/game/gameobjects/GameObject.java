@@ -13,4 +13,8 @@ public class GameObject {
     public GameObject() {
         this.id = Id.of(ID_GENERATOR.incrementAndGet());
     }
+
+    public Id<?> getId() {
+        return id;
+    }
 }

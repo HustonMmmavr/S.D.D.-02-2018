@@ -31,6 +31,4 @@ public class GameMessageHandlerContainer implements MessageHandlerContainer {
     public <T extends Message> void registerHandler(@NotNull Class<T> clazz, MessageHandler<T> handler) {
         handlerMap.put(clazz, handler);
     }
-
-
 }
