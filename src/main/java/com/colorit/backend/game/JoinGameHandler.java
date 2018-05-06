@@ -17,17 +17,14 @@ import javax.validation.constraints.NotNull;
 @Component
 public class JoinGameHandler extends MessageHandler<JoinGame.Request> {
     @NotNull
-    private final GameMechanics gameMechanics;
-    @NotNull
     private final GameSessionsController gameSessionsController;
     @NotNull
     private final MessageHandlerContainer messageHandlerContainer;
 
-    public JoinGameHandler(@NotNull GameMechanics gameMechanics, @NotNull GameSessionsController gameSessionsController,
+    public JoinGameHandler(@NotNull GameSessionsController gameSessionsController,
                            @NotNull MessageHandlerContainer messageHandlerContainer) {
 
         super(JoinGame.Request.class);
-        this.gameMechanics = gameMechanics;
         this.messageHandlerContainer = messageHandlerContainer;
         this.gameSessionsController = gameSessionsController;
     }
