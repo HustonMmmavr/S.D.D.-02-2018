@@ -1,34 +1,40 @@
 package com.colorit.backend.game.messages.input;
 
+import com.colorit.backend.game.lobby.LobbySettings;
 import com.colorit.backend.websocket.Message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LobbyMessage extends Message {
-    public static class LobbyCreate {
-        Integer fieldSize;
-        Boolean isMultiplayer;
+    private LobbySettings settings;
+    private Action action;
 
-        @JsonProperty("fieldSize")
-        public Integer getFieldSize() {
-            return fieldSize;
-        }
-
-        public void setFieldSize(Integer fieldSize) {
-            this.fieldSize = fieldSize;
-        }
-
-        @JsonProperty("isMultiplayer")
-        public Boolean getMultiplayer() {
-            return isMultiplayer;
-        }
-
-        public void setMultiplayer(Boolean multiplayer) {
-            isMultiplayer = multiplayer;
-        }
-    }
-
-    public static class LobbyStart {
+    public enum Action {
+        @JsonProperty("CREATE")
+        CREATE,
+        @JsonProperty("CONNECT")
+        CONNCECT,
+        @JsonProperty("DISCONNECT")
+        DISCONNECT,
+        @JsonProperty("CHAT")
+        CHAT
     }
 
 
+    @JsonProperty("settings")
+    public LobbySettings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(LobbySettings settings) {
+        this.settings = settings;
+    }
+
+    @JsonProperty("action")
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
 }

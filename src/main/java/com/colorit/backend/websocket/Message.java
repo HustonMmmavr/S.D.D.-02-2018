@@ -1,10 +1,10 @@
 package com.colorit.backend.websocket;
 
-import com.colorit.backend.game.Connected;
-import com.colorit.backend.game.messages.ClientSnapshot;
-import com.colorit.backend.game.messages.GameStart;
+import com.colorit.backend.game.messages.output.Connected;
+import com.colorit.backend.game.messages.input.ClientSnapshot;
+import com.colorit.backend.game.messages.output.GameStart;
 import com.colorit.backend.game.messages.JoinGame;
-import com.colorit.backend.game.messages.Position;
+import com.colorit.backend.game.messages.output.Position;
 import com.colorit.backend.game.messages.input.LobbyMessage;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -18,9 +18,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(Position.class),
         @Type(GameStart.class),
         @Type(ClientSnapshot.class),
-        @Type(LobbyMessage.LobbyCreate.class),
-        @Type(LobbyMessage.LobbyStart.class)
-//        @Type(FinishGame.class),
+        @Type(LobbyMessage.class)
 })
 public abstract class Message {
 }

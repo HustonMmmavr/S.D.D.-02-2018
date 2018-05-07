@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Point<T extends Number>  {
     private double x;
     private double y;
-//    private Class<T> clazz;
 
     public Point(@JsonProperty("x") T x, @JsonProperty("y") T y) {
         this.x = x.doubleValue();

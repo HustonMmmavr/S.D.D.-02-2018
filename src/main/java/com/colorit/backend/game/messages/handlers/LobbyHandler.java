@@ -2,7 +2,7 @@ package com.colorit.backend.game.messages.handlers;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.LobbyController;
+import com.colorit.backend.game.lobby.LobbyController;
 import com.colorit.backend.game.messages.input.LobbyMessage;
 import com.colorit.backend.websocket.HandleException;
 import com.colorit.backend.websocket.MessageHandler;
@@ -16,7 +16,8 @@ import javax.validation.constraints.NotNull;
 public class LobbyHandler extends MessageHandler<LobbyMessage> {
     @NotNull
     private final LobbyController lobbyController;
-    @NotNull MessageHandlerContainer messageHandlerContainer;
+    @NotNull
+    private final MessageHandlerContainer messageHandlerContainer;
 
     public LobbyHandler(@NotNull LobbyController lobbyController,
                         @NotNull MessageHandlerContainer messageHandlerContainer) {
@@ -27,18 +28,25 @@ public class LobbyHandler extends MessageHandler<LobbyMessage> {
 
     @PostConstruct
     private void init() {
-//        messageHandlerContainer.registerHandler(LobbyMessage.class, this);
-        messageHandlerContainer.registerHandler(LobbyMessage.LobbyCreate.class, this);
-
+        messageHandlerContainer.registerHandler(LobbyMessage.class, this);
     }
-
 
     @Override
     public void handle(@NotNull LobbyMessage message, @NotNull Id<UserEntity> forUser) throws HandleException {
-        if (message. instanceof LobbyMessage.LobbyCreate) {
-            System.out.print("create");
-        } else if (message instanceof LobbyMessage.LobbyStart) {
-            System.out.print("start");
+        switch (message.getAction()) {
+            case CONNCECT:
+                lobbyController.addUser();
+                break;
+            case CREATE:
+                lobbyController.init(forUser, message.getSettings());
+                break;
+            case CHAT:
+                break;
+            case DISCONNECT:
+                break;
+            default:
+                break;
+
         }
     }
 }

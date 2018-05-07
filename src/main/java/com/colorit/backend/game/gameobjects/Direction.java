@@ -12,7 +12,7 @@ public enum Direction {
     @JsonProperty("RIGHT")
     RIGHT (4);
 
-    Integer id;
+    private Integer id;
 
     Direction(Integer id) {
         this.id = id;

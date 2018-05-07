@@ -6,7 +6,7 @@ import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.gameobjects.GameField;
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.game.gameobjects.players.Player;
-import com.colorit.backend.game.messages.Position;
+import com.colorit.backend.game.messages.output.Position;
 import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,6 @@ public class GameSession {
     }
 
     public void changeDirection(Id<UserEntity> uId, Direction direction) {
-        //List<Player>  player = players.stream().filter(p -> p.getId().equals(uId)).collect();
         Player player = playersMap.get(uId);
         player.setDirection(direction);
     }

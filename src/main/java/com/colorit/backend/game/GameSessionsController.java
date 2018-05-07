@@ -2,7 +2,8 @@ package com.colorit.backend.game;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.messages.GameStart;
+import com.colorit.backend.game.messages.output.Connected;
+import com.colorit.backend.game.messages.output.GameStart;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
@@ -30,14 +31,32 @@ public class GameSessionsController {
 
 
     // connected to lobby
-    public void createSession() {
+    public GameSession createSession() {
+        final GameSession gameSession = new GameSession(remotePointService);
+        // todo add session to list
 
+        return gameSession;
     }
 
     public HashMap<Id<UserEntity>, GameSession> getGameUserSessions() {return gameUserSessions;}
 
     public Set<GameSession> getGameSessions() {
         return gamesSessions;
+    }
+
+    public void removeUser(Id<UserEntity> uId, GameSession gameSession) {
+        gameUserSessions.remove(uId);
+//        gameSession
+    }
+
+    public void addUesr(Id<UserEntity> uId, GameSession gameSession) {
+        gameUserSessions.put(uId, gameSession);
+        gameSession.addUser(uId);
+        try {
+            remotePointService.sendMessageToUser( uId, new Connected("hi " + uId.getAdditionalInfo()));
+        } catch (IOException ignore) {
+
+        }
     }
 
     public void addUser(Id<UserEntity> userId) {

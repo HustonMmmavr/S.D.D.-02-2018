@@ -1,4 +1,4 @@
-package com.colorit.backend.game.messages;
+package com.colorit.backend.game.messages.output;
 
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.websocket.Message;

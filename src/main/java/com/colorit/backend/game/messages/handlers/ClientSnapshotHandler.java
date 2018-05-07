@@ -1,9 +1,9 @@
-package com.colorit.backend.game;
+package com.colorit.backend.game.messages.handlers;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.mechanics.GameMechanics;
-import com.colorit.backend.game.messages.ClientSnapshot;
+import com.colorit.backend.game.messages.input.ClientSnapshot;
 import com.colorit.backend.websocket.MessageHandler;
 import com.colorit.backend.websocket.MessageHandlerContainer;
 import org.springframework.stereotype.Service;

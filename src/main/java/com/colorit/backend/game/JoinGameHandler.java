@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
-/**
- * Created by Solovyev on 03/11/2016.
- */
 @Component
 public class JoinGameHandler extends MessageHandler<JoinGame.Request> {
     @NotNull
