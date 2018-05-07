@@ -70,10 +70,11 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         final String nickname = (String) webSocketSession.getAttributes().get(SESSION_KEY);
+        // remove this maybe, or make inmemory db
         final UserServiceResponse userServiceResponse = userService.getUserEntity(nickname);
 
         // todo check idMap
-        if (nickname == null || idMap.get(nickname) == null) {//!(userServiceResponse = userService.getUserEntity(nickname)).isValid()) {
+        if (nickname == null || idMap.get(nickname) == null) {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
             return;
         }

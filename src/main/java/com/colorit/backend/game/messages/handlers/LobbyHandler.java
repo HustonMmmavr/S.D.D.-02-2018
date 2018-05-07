@@ -35,7 +35,7 @@ public class LobbyHandler extends MessageHandler<LobbyMessage> {
     public void handle(@NotNull LobbyMessage message, @NotNull Id<UserEntity> forUser) throws HandleException {
         switch (message.getAction()) {
             case CONNCECT:
-                lobbyController.addUser();
+//                lobbyController.addUser(forUser, message.getLobbyId());
                 break;
             case CREATE:
                 lobbyController.init(forUser, message.getSettings());

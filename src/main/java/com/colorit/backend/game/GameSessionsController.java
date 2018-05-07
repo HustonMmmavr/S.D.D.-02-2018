@@ -33,6 +33,7 @@ public class GameSessionsController {
     // connected to lobby
     public GameSession createSession() {
         final GameSession gameSession = new GameSession(remotePointService);
+        gamesSessions.add(gameSession);
         // todo add session to list
 
         return gameSession;
@@ -49,13 +50,25 @@ public class GameSessionsController {
 //        gameSession
     }
 
-    public void addUesr(Id<UserEntity> uId, GameSession gameSession) {
+    public void addUser(Id<UserEntity> uId, GameSession gameSession) {
         gameUserSessions.put(uId, gameSession);
         gameSession.addUser(uId);
         try {
             remotePointService.sendMessageToUser( uId, new Connected("hi " + uId.getAdditionalInfo()));
         } catch (IOException ignore) {
 
+        }
+        if (gameSession.isFullParty()) {
+//            gamesSessions.add(currentSession);
+            gameSession.setStatus(GameSession.Status.FILLED);
+            try {
+                for (Id<UserEntity> user : currentSession.getUsers()) {
+                    remotePointService.sendMessageToUser(user, new GameStart());
+                }
+            } catch (IOException err) {
+                LOGGER.error("GAME cant start");
+            }
+//            currentSession = new GameSession(remotePointService);
         }
     }
 
@@ -73,8 +86,9 @@ public class GameSessionsController {
             try {
                 for (Id<UserEntity> uId : currentSession.getUsers()) {
                     remotePointService.sendMessageToUser(uId, new GameStart());
+                    Thread.sleep(1000);
                 }
-            } catch (IOException err) {
+            } catch (Exception e) { //IOException err) {
                 LOGGER.error("GAME cant start");
             }
             currentSession = new GameSession(remotePointService);

@@ -29,7 +29,8 @@ public class LobbyController {
     public void addUser(Id<Lobby> lId, Id<UserEntity> uId) {
         final Lobby lobby = lobbiesMap.get(lId);
         // TODO chekc null
-        lobby.getAssociatedSession().addUser(uId);
+        gameSessionsController.addUser(uId, lobby.getAssociatedSession());
+//        lobby.getAssociatedSession().addUser(uId);
     }
 
     public void removeUser() {
@@ -40,7 +41,7 @@ public class LobbyController {
 
     public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
         final GameSession gameSession = gameSessionsController.createSession();
-        gameSession.addUser(uId);
+        gameSessionsController.addUser(uId, gameSession);
         final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
         lobbiesMap.put(lobby.getId(), lobby);
     }

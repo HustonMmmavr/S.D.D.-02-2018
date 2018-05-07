@@ -25,7 +25,6 @@ public class GameMechanics implements IGameMechanics {
     public void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull ClientSnapshot clientSnap) {
         final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
         gameSession.changeDirection(userId, clientSnap.getDirection());
-
     }
 
     GameMechanics(@NotNull GameSessionsController gameSessionsController,
@@ -42,9 +41,14 @@ public class GameMechanics implements IGameMechanics {
 
     @Override
     public void gameStep(long frameTime) {
-        for (GameSession gameSession: gameSessionsController.getGameSessions()) {
-            gameSession.movePlayers(frameTime);
-            gameSession.sendGameInfo();
+        try {
+            for (GameSession gameSession : gameSessionsController.getGameSessions()) {
+                gameSession.movePlayers(frameTime);
+                gameSession.sendGameInfo();
+                Thread.sleep(1000);
+            }
+        } catch (Exception i) {
+
         }
     }
 
