@@ -1,0 +1,44 @@
+package com.colorit.backend.game.messages.handlers;
+
+import com.colorit.backend.entities.Id;
+import com.colorit.backend.entities.db.UserEntity;
+import com.colorit.backend.game.LobbyController;
+import com.colorit.backend.game.messages.input.LobbyMessage;
+import com.colorit.backend.websocket.HandleException;
+import com.colorit.backend.websocket.MessageHandler;
+import com.colorit.backend.websocket.MessageHandlerContainer;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
+
+@Service
+public class LobbyHandler extends MessageHandler<LobbyMessage> {
+    @NotNull
+    private final LobbyController lobbyController;
+    @NotNull MessageHandlerContainer messageHandlerContainer;
+
+    public LobbyHandler(@NotNull LobbyController lobbyController,
+                        @NotNull MessageHandlerContainer messageHandlerContainer) {
+        super(LobbyMessage.class);
+        this.lobbyController = lobbyController;
+        this.messageHandlerContainer = messageHandlerContainer;
+    }
+
+    @PostConstruct
+    private void init() {
+//        messageHandlerContainer.registerHandler(LobbyMessage.class, this);
+        messageHandlerContainer.registerHandler(LobbyMessage.LobbyCreate.class, this);
+
+    }
+
+
+    @Override
+    public void handle(@NotNull LobbyMessage message, @NotNull Id<UserEntity> forUser) throws HandleException {
+        if (message. instanceof LobbyMessage.LobbyCreate) {
+            System.out.print("create");
+        } else if (message instanceof LobbyMessage.LobbyStart) {
+            System.out.print("start");
+        }
+    }
+}

@@ -16,7 +16,6 @@ import java.util.*;
 @Service
 public class GameSessionsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionsController.class);
-//    private List<GameSession> gameSessions = new ArrayList<>(); // formed sessions
     private GameSession currentSession;
     private RemotePointService remotePointService;
     @NotNull
@@ -26,7 +25,13 @@ public class GameSessionsController {
 
     GameSessionsController(@NotNull RemotePointService remotePointService) {
         this.remotePointService = remotePointService;
-         currentSession = new GameSession(remotePointService);
+        currentSession = new GameSession(remotePointService);
+    }
+
+
+    // connected to lobby
+    public void createSession() {
+
     }
 
     public HashMap<Id<UserEntity>, GameSession> getGameUserSessions() {return gameUserSessions;}

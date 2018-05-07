@@ -5,6 +5,7 @@ import com.colorit.backend.game.messages.ClientSnapshot;
 import com.colorit.backend.game.messages.GameStart;
 import com.colorit.backend.game.messages.JoinGame;
 import com.colorit.backend.game.messages.Position;
+import com.colorit.backend.game.messages.input.LobbyMessage;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -16,7 +17,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(GameStart.class),
         @Type(Position.class),
         @Type(GameStart.class),
-        @Type(ClientSnapshot.class)
+        @Type(ClientSnapshot.class),
+        @Type(LobbyMessage.LobbyCreate.class),
+        @Type(LobbyMessage.LobbyStart.class)
 //        @Type(FinishGame.class),
 })
 public abstract class Message {
