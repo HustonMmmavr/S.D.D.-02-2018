@@ -1,4 +1,4 @@
-package com.colorit.backend.game.messages;
+package com.colorit.backend.game.messages.input;
 
 
 import com.colorit.backend.websocket.Message;

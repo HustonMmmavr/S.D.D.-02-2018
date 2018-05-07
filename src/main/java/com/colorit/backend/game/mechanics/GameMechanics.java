@@ -2,7 +2,7 @@ package com.colorit.backend.game.mechanics;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.GameSessionsController;
+import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.messages.input.ClientSnapshot;
 import com.colorit.backend.game.session.GameSession;
@@ -39,6 +39,8 @@ public class GameMechanics implements IGameMechanics {
     }
 
 
+
+    // Its for test TODO delete slee
     @Override
     public void gameStep(long frameTime) {
         try {

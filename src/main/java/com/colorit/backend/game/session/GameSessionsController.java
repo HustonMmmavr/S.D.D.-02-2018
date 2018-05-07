@@ -1,10 +1,9 @@
-package com.colorit.backend.game;
+package com.colorit.backend.game.session;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.messages.output.Connected;
 import com.colorit.backend.game.messages.output.GameStart;
-import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
