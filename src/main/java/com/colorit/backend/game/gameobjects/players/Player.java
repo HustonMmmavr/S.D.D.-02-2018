@@ -34,6 +34,8 @@ public class Player extends GameObject {
     }
 
     public  void move(double timeDelay) {
+        final Point<Double> yMovr = new Point<>(0.0, velocity * timeDelay);
+        final Point<Double> xMove = new Point<>(velocity * timeDelay, 0.0);
         final Double newVelocity = velocity * timeDelay;
         if (currentDirection == Direction.RIGHT) {
             currentPosition.setX(currentPosition.getX() + velocity);//newVelocity);

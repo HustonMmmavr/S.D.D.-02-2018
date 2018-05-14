@@ -4,6 +4,7 @@ import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.session.GameSession;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Lobby {
@@ -30,6 +31,10 @@ public class Lobby {
 
     public GameSession getAssociatedSession() {
         return associatedSession;
+    }
+
+    public List<Id<UserEntity>> getUsers() {
+        return associatedSession.getUsers();
     }
 
     public boolean changeOwner() {

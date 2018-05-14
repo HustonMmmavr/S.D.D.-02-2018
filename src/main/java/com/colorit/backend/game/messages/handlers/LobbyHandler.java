@@ -35,7 +35,7 @@ public class LobbyHandler extends MessageHandler<LobbyMessage> {
     public void handle(@NotNull LobbyMessage message, @NotNull Id<UserEntity> forUser) throws HandleException {
         switch (message.getAction()) {
             case CONNCECT:
-//                lobbyController.addUser(forUser, message.getLobbyId());
+                lobbyController.addUser(Id.of(message.getLobbyId()), forUser);
                 break;
             case CREATE:
                 lobbyController.init(forUser, message.getSettings());
@@ -43,7 +43,10 @@ public class LobbyHandler extends MessageHandler<LobbyMessage> {
             case CHAT:
                 break;
             case DISCONNECT:
+                lobbyController.removeUser(Id.of(message.getLobbyId()), forUser);
                 break;
+            case USERS:
+                lobbyController.getLobbyUsers(Id.of(message.getLobbyId()), forUser);
             default:
                 break;
 
