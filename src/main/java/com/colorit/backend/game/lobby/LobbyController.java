@@ -8,7 +8,6 @@ import com.colorit.backend.game.messages.output.LobbyUsers;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
-import org.dom4j.bean.BeanAttributeList;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;

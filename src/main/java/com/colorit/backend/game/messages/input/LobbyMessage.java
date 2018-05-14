@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LobbyMessage extends Message {
     private LobbySettings settings;
     private Action action;
-    private Long id;
+    private long id;
 
     public enum Action {
         @JsonProperty("CREATE")
