@@ -15,8 +15,17 @@ public class Lobby {
     private final Integer fieldSize;
     private final Integer gameTime;
     private final Boolean isMultiplayer;
+    private State state;
+
+    public enum State {
+        WAITING,
+        FILLED,
+        STARTED,
+        EMPTY
+    }
 
     public Lobby(LobbySettings lobbySettings, Id<UserEntity> ownerId, GameSession gameSession) {
+        this.state = State.WAITING;
         this.id = Id.of(ID_GENERATOR.getAndIncrement());
         this.ownerId = ownerId;
         this.associatedSession = gameSession;
@@ -43,5 +52,9 @@ public class Lobby {
         }
         ownerId = associatedSession.getUsers().get(0);
         return true;
+    }
+
+    public Boolean isActive() {
+        return state == State.WAITING || state == State.FILLED;
     }
 }

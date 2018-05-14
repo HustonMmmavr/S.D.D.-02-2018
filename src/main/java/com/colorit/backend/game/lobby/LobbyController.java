@@ -2,11 +2,13 @@ package com.colorit.backend.game.lobby;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
+import com.colorit.backend.game.messages.output.Lobbies;
 import com.colorit.backend.game.messages.output.LobbyError;
 import com.colorit.backend.game.messages.output.LobbyUsers;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
+import org.dom4j.bean.BeanAttributeList;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -53,10 +55,11 @@ public class LobbyController {
             }
             return;
         }
+
         gameSessionsController.removeUser(uId, lobby.getAssociatedSession());
-//        if (lobby.getAssociatedSession().getUsers().size() == 0) {
-//            delete lobby;
-//        }
+        if (lobby.getAssociatedSession().getUsers().size() == 0) {
+            gameSessionsController.deleteSession(lobby.getAssociatedSession());
+        }
     }
 
     public void getLobbyUsers(Id<Lobby> lId, Id<UserEntity> uId) {
@@ -68,21 +71,25 @@ public class LobbyController {
                 return;
             }
             lobby.getUsers().forEach(user -> users.add(user.getAdditionalInfo()));
-            remotePointService.sendMessageToUser(uId, new LobbyUsers(users));
+            remotePointService.sendMessageToUser(uId, new LobbyUsers(lId, users));
         } catch (IOException ignore) {
 
         }
     }
 
-
-    // todo also need to create handler like joingame (maybe userconnect, after this user connect make request to show
-    // lobbies, and after that show one lobby, after if user connecting add user here)
-    // todo returns lobby list with (lobby contains list user, ownwer, chat)
-    public Set<Id<Lobby>> getLobbies() {
-        return lobbiesMap.keySet();
+    public void getLobbies(Id<UserEntity> uId) {
+        try {
+            List<Id<Lobby>> lobbiesId = new ArrayList<>();
+            for (Id<Lobby> lId : lobbiesMap.keySet()) {
+                Lobby lobby = lobbiesMap.get(lId);
+                if (lobby != null && lobby.isActive()) {
+                    lobbiesId.add(lId);
+                }
+            }
+            remotePointService.sendMessageToUser(uId, new Lobbies(lobbiesId));
+        } catch (IOException ignore) {
+        }
     }
-
-
 
     public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
         final GameSession gameSession = gameSessionsController.createSession();
@@ -92,3 +99,8 @@ public class LobbyController {
         lobbies.add(lobby);
     }
 }
+
+
+// todo also need to create handler like joingame (maybe userconnect, after this user connect make request to show
+// lobbies, and after that show one lobby, after if user connecting add user here)
+// todo returns lobby list with (lobby contains list user, ownwer, chat)

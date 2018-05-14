@@ -38,6 +38,11 @@ public class GameSessionsController {
         return gameSession;
     }
 
+    public void deleteSession(GameSession gameSession) {
+        gameSession.getUsers().forEach(user -> gameUserSessions.remove(user));
+        gamesSessions.remove(gameSession);
+    }
+
     public HashMap<Id<UserEntity>, GameSession> getGameUserSessions() {return gameUserSessions;}
 
     public Set<GameSession> getGameSessions() {
