@@ -3,7 +3,6 @@ package com.colorit.backend.websocket;
 import com.colorit.backend.game.messages.input.ShowLobbies;
 import com.colorit.backend.game.messages.output.*;
 import com.colorit.backend.game.messages.input.ClientSnapshot;
-import com.colorit.backend.game.messages.input.JoinGame;
 import com.colorit.backend.game.messages.input.LobbyMessage;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;

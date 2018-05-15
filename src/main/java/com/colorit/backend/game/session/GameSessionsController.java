@@ -16,7 +16,7 @@ import java.util.*;
 @Service
 public class GameSessionsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionsController.class);
-    private GameSession currentSession;
+    @NotNull
     private RemotePointService remotePointService;
     @NotNull
     private final Set<GameSession> gamesSessions = new LinkedHashSet<>();
@@ -25,9 +25,7 @@ public class GameSessionsController {
 
     GameSessionsController(@NotNull RemotePointService remotePointService) {
         this.remotePointService = remotePointService;
-        currentSession = new GameSession(remotePointService);
     }
-
 
     // connected to lobby
     public GameSession createSession() {
@@ -51,7 +49,7 @@ public class GameSessionsController {
 
     public void removeUser(Id<UserEntity> uId, GameSession gameSession) {
         gameUserSessions.remove(uId);
-//        gameSession
+        gameSession.removeUser(uId);
     }
 
     public void addUser(Id<UserEntity> uId, GameSession gameSession) {
@@ -63,39 +61,39 @@ public class GameSessionsController {
 
         }
         if (gameSession.isFullParty()) {
-//            gamesSessions.add(currentSession);
             gameSession.setStatus(GameSession.Status.FILLED);
             try {
-                for (Id<UserEntity> user : currentSession.getUsers()) {
+                for (Id<UserEntity> user : gameSession.getUsers()) {
                     remotePointService.sendMessageToUser(user, new GameStart());
                 }
             } catch (IOException err) {
                 LOGGER.error("GAME cant start");
             }
-//            currentSession = new GameSession(remotePointService);
-        }
-    }
-
-    public void addUser(Id<UserEntity> userId) {
-        currentSession.addUser(userId);
-        gameUserSessions.put(userId, currentSession);
-        try {
-            remotePointService.sendMessageToUser( userId, new Connected("hi " + userId.getAdditionalInfo()));
-        } catch (IOException ignore) {
-
-        }
-        if (currentSession.isFullParty()) {
-            gamesSessions.add(currentSession);
-            currentSession.setStatus(GameSession.Status.FILLED);
-            try {
-                for (Id<UserEntity> uId : currentSession.getUsers()) {
-                    remotePointService.sendMessageToUser(uId, new GameStart());
-                    Thread.sleep(1000);
-                }
-            } catch (Exception e) { //IOException err) {
-                LOGGER.error("GAME cant start");
-            }
-            currentSession = new GameSession(remotePointService);
         }
     }
 }
+
+//    public void addUser(Id<UserEntity> userId) {
+//        currentSession.addUser(userId);
+//        gameUserSessions.put(userId, currentSession);
+//        try {
+//            remotePointService.sendMessageToUser( userId, new Connected("hi " + userId.getAdditionalInfo()));
+//        } catch (IOException ignore) {
+//
+//        }
+//        if (currentSession.isFullParty()) {
+//            gamesSessions.add(currentSession);
+//            currentSession.setStatus(GameSession.Status.FILLED);
+//            try {
+//                for (Id<UserEntity> uId : currentSession.getUsers()) {
+//                    remotePointService.sendMessageToUser(uId, new GameStart());
+//                    Thread.sleep(1000);
+//                }
+//            } catch (Exception e) { //IOException err) {
+//                LOGGER.error("GAME cant start");
+//            }
+//            currentSession = new GameSession(remotePointService);
+//        }
+//    }
+//    private GameSession currentSession;
+//        currentSession = new GameSession(remotePointService);

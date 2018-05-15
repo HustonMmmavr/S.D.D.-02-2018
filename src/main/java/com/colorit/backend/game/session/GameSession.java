@@ -63,6 +63,13 @@ public class GameSession {
         players.add(player);
     }
 
+    public void removeUser(Id<UserEntity> uId) {
+        users.remove(uId);
+        Player player = playersMap.get(uId);
+        playersMap.remove(uId);
+        players.remove(player);
+    }
+
     public void changeDirection(Id<UserEntity> uId, Direction direction) {
         Player player = playersMap.get(uId);
         player.setDirection(direction);

@@ -8,6 +8,7 @@ public class LobbyMessage extends Message {
     private LobbySettings settings;
     private Action action;
     private long id;
+    private String name;
 
     public enum Action {
         @JsonProperty("CREATE")
@@ -33,6 +34,10 @@ public class LobbyMessage extends Message {
         return id;
     }
 
+    @JsonProperty("name")
+    public String getName() {
+        return name;
+    }
 
     public void setSettings(LobbySettings settings) {
         this.settings = settings;

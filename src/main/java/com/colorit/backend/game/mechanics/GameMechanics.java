@@ -45,9 +45,11 @@ public class GameMechanics implements IGameMechanics {
     public void gameStep(long frameTime) {
         try {
             for (GameSession gameSession : gameSessionsController.getGameSessions()) {
-                gameSession.movePlayers(frameTime);
-                gameSession.sendGameInfo();
-                Thread.sleep(1000);
+                if (gameSession.isFullParty()) {
+                    gameSession.movePlayers(frameTime);
+                    gameSession.sendGameInfo();
+                    Thread.sleep(1000);
+                }
             }
         } catch (Exception i) {
 
