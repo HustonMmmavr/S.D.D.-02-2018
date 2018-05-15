@@ -8,7 +8,6 @@ public class LobbyMessage extends Message {
     private LobbySettings settings;
     private Action action;
     private long id;
-    private String name;
 
     public enum Action {
         @JsonProperty("CREATE")
@@ -29,14 +28,11 @@ public class LobbyMessage extends Message {
         return settings;
     }
 
+
+    // its need when we try connect to lobby
     @JsonProperty("id")
     public Long getLobbyId() {
         return id;
-    }
-
-    @JsonProperty("name")
-    public String getName() {
-        return name;
     }
 
     public void setSettings(LobbySettings settings) {

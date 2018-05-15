@@ -6,10 +6,17 @@ public class LobbySettings {
     private Integer gameTime;
     private Integer fieldSize;
     private Boolean isMultiplayer;
+    private String name;
 
     @JsonProperty("gameTime")
     public Integer getGameTime() {
         return gameTime;
+    }
+
+
+    @JsonProperty("name")
+    public String getName() {
+        return name;
     }
 
     public void setGameTime(Integer gameTime) {

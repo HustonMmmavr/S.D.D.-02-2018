@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "class")
 @JsonSubTypes({
-        @Type(JoinGame.Request.class),
         @Type(ShowLobbies.Request.class),
         @Type(Connected.class),
         @Type(GameStart.class),

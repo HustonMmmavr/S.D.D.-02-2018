@@ -1,5 +1,6 @@
 package com.colorit.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public class Id<T> {
@@ -10,7 +11,6 @@ public class Id<T> {
         this.id = id;
     }
 
-    @JsonValue
     public long getId() {
         return id;
     }
@@ -20,7 +20,7 @@ public class Id<T> {
     }
 
     public String getAdditionalInfo() {
-        return this.additionalInfo;
+        return additionalInfo;
     }
 
     public static <T> Id<T> of(long id) {
@@ -37,9 +37,9 @@ public class Id<T> {
         }
         final Id<?> id1 = (Id<?>) subj;
 
-        if (this.additionalInfo != null) {
-            return this.additionalInfo.equals(id1.additionalInfo);
-        }
+//        if (this.additionalInfo != null) {
+//            return this.additionalInfo.equals(id1.additionalInfo);
+//        }
         return this.id.equals(id1.id);
     }
 
@@ -51,7 +51,8 @@ public class Id<T> {
     @Override
     public String toString() {
         return "Id{"
-                + "id=" + id
-                + '}';
+                + "id=" + id + ","
+                + "additionalInfo=" + additionalInfo
+                + "}";
     }
 }

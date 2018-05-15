@@ -28,10 +28,15 @@ public class Lobby {
         this.state = State.WAITING;
         this.id = Id.of(ID_GENERATOR.getAndIncrement());
         this.ownerId = ownerId;
+        id.setAdditionalInfo(lobbySettings.getName());
         this.associatedSession = gameSession;
         this.fieldSize = lobbySettings.getFieldSize();
         this.gameTime = lobbySettings.getGameTime();
         this.isMultiplayer = lobbySettings.getMultiplayer();
+    }
+
+    public Id<UserEntity> getOwnerId() {
+        return ownerId;
     }
 
     public Id<Lobby> getId() {
@@ -58,3 +63,5 @@ public class Lobby {
         return state == State.WAITING || state == State.FILLED;
     }
 }
+
+

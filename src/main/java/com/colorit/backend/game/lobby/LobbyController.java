@@ -10,6 +10,7 @@ import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
@@ -78,14 +79,14 @@ public class LobbyController {
 
     public void getLobbies(Id<UserEntity> uId) {
         try {
-            List<Id<Lobby>> lobbiesId = new ArrayList<>();
+            final List<Lobbies.OneLobby> lobbiesList = new ArrayList<>();
             for (Id<Lobby> lId : lobbiesMap.keySet()) {
                 Lobby lobby = lobbiesMap.get(lId);
                 if (lobby != null && lobby.isActive()) {
-                    lobbiesId.add(lId);
+                    lobbiesList.add(new Lobbies.OneLobby(lId.getId(), lId.getAdditionalInfo(), lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo()));
                 }
             }
-            remotePointService.sendMessageToUser(uId, new Lobbies(lobbiesId));
+            remotePointService.sendMessageToUser(uId, new Lobbies(lobbiesList));
         } catch (IOException ignore) {
         }
     }
@@ -98,8 +99,3 @@ public class LobbyController {
         lobbies.add(lobby);
     }
 }
-
-
-// todo also need to create handler like joingame (maybe userconnect, after this user connect make request to show
-// lobbies, and after that show one lobby, after if user connecting add user here)
-// todo returns lobby list with (lobby contains list user, ownwer, chat)
