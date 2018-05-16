@@ -2,37 +2,37 @@ package com.colorit.backend.game.gameobjects.math;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Point<T extends Number>  {
-    private double x;
-    private double y;
+public class Point  {
+    private int x;
+    private int y;
 
-    public Point(@JsonProperty("x") T x, @JsonProperty("y") T y) {
-        this.x = x.doubleValue();
-        this.y = y.doubleValue();
+    public Point(@JsonProperty("x") int x, @JsonProperty("y") int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public Double getX() {
+    public int getX() {
         return x;
     }
 
-    public void setX(T x) {
-        this.x = x.doubleValue();
+    public void setX(int x) {
+        this.x = x;
     }
 
-    public Double getY() {
+    public int getY() {
         return y;
     }
 
-    public void setY(T y) {
-        this.y = y.doubleValue();
+    public void setY(int y) {
+        this.y = y;
     }
 
-    public void add(Point<T> other) {
+    public void add(Point other) {
         this.x += other.x;
         this.y += other.y;
     }
 
-    public void sub(Point<T> other) {
+    public void sub(Point other) {
         this.x -= other.x;
         this.y -= other.y;
     }

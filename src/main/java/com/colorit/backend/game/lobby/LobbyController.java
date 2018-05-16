@@ -10,7 +10,6 @@ import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
@@ -24,7 +23,7 @@ public class LobbyController {
 
     private final HashMap<Id<Lobby>, Lobby> lobbiesMap = new HashMap<>();
     private final Set<Lobby> lobbies = new HashSet<>();
-    private final Set<Id<Lobby>> activeLobbies = new HashSet<>();
+//    private final Set<Id<Lobby>> activeLobbies = new HashSet<>();
 
     public LobbyController(@NotNull GameSessionsController gameSessionsController,
                            @NotNull RemotePointService remotePointService) {
@@ -92,7 +91,7 @@ public class LobbyController {
     }
 
     public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
-        final GameSession gameSession = gameSessionsController.createSession();
+        final GameSession gameSession = gameSessionsController.createSession(lobbySettings.getFieldSize());
         gameSessionsController.addUser(uId, gameSession);
         final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
         lobbiesMap.put(lobby.getId(), lobby);

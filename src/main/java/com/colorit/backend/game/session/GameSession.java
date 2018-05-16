@@ -17,10 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.colorit.backend.game.GameConfig.MIN_BORDER;
+
 public class GameSession {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSession.class);
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private static final int FULL_PARTY = 2;
+    private static final int FULL_PARTY = 1;
 
     // TODO
     private List<Id<UserEntity>> users = new ArrayList<>();
@@ -31,8 +33,9 @@ public class GameSession {
     private Status sessionStatus;
     private RemotePointService remotePointService;
 
-    public GameSession(RemotePointService remotePointService) {
+    public GameSession(RemotePointService remotePointService, int fieldSize) {
         id = Id.of(ID_GENERATOR.getAndIncrement());
+        gameField = new GameField(fieldSize);
         sessionStatus = Status.CREATED;
         this.remotePointService = remotePointService;
     }
@@ -58,25 +61,37 @@ public class GameSession {
 
     public void addUser(Id<UserEntity> userId) {
         users.add(userId);
-        Player player = new Player(userId.getAdditionalInfo());
-        playersMap.put(userId, player);
-        players.add(player);
     }
+
+    public void startSession() {
+        long playerId = 1;
+        for (Id<UserEntity> user: users) {
+            final Point startPoint = new Point(playerId == 1 || playerId == 4  ?  0 : gameField.getRank() ,
+                    playerId < 3 ? 0 : gameField.getRank());
+            final Player player = new Player(user.getAdditionalInfo(), Id.of(playerId), startPoint);
+            playerId += 1;
+            playersMap.put(user, player);
+            players.add(player);
+        }
+    }
+
 
     public void removeUser(Id<UserEntity> uId) {
         users.remove(uId);
-        Player player = playersMap.get(uId);
+        final Player player = playersMap.get(uId);
         playersMap.remove(uId);
         players.remove(player);
     }
 
     public void changeDirection(Id<UserEntity> uId, Direction direction) {
-        Player player = playersMap.get(uId);
+        final Player player = playersMap.get(uId);
         player.setDirection(direction);
     }
 
     public void movePlayers(long delay) {
-        players.forEach(player -> player.move((double) delay));
+        players.forEach(player ->
+            gameField.markCell(player.move((double) delay, MIN_BORDER, gameField.getRank() - 1), player.getPlayerId().getId())
+        );
     }
 
     public void sendGameInfo() {
@@ -87,7 +102,6 @@ public class GameSession {
         try {
             for (Id<UserEntity> user : users) {
                 remotePointService.sendMessageToUser(user, position);
-//                Thread.sleep(1000);
             }
         } catch (IOException ex) {
             LOGGER.error("error send info");

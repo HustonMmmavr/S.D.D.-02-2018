@@ -48,7 +48,7 @@ public class GameMechanics implements IGameMechanics {
                 if (gameSession.isFullParty()) {
                     gameSession.movePlayers(frameTime);
                     gameSession.sendGameInfo();
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
                 }
             }
         } catch (Exception i) {

@@ -11,7 +11,7 @@ import java.util.List;
 public class GameStart extends Message {
     private Id<UserEntity> self;
     private List<Id<UserEntity>> enemies;
-    Point<Double> position;
+    Point position;
     Direction direction;
 
     public GameStart() {}

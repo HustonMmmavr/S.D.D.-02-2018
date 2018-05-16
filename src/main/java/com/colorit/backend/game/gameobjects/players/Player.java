@@ -1,78 +1,84 @@
 package com.colorit.backend.game.gameobjects.players;
 
+import com.colorit.backend.entities.Id;
 import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.gameobjects.GameObject;
 import com.colorit.backend.game.gameobjects.math.Point;
+import com.fasterxml.jackson.databind.node.POJONode;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.colorit.backend.game.GameConfig.*;
 
 public class Player extends GameObject {
     protected String nickname;
     protected Integer score;
+    protected int offset;
     protected Direction currentDirection;
     protected Direction newDirection;
-    protected Point<Double> currentPosition;
+    protected Point currentPosition;
     protected Integer velocity = DEFAULT_VELOCITY;
+    protected Id<Player> playerId;
 
-    public Player(String nickname) {
+    public Player(String nickname, Id<Player> playerId, Point startPoint) {
         this.nickname = nickname;
         this.score = 0;
-        if (id.getId() == 1) {
-            currentPosition = new Point<>(50.0,50.0);
-            this.currentDirection = Direction.RIGHT;
+        this.playerId = playerId;
+        this.offset = 0;
+        this.currentPosition = startPoint;
+
+        if (playerId.getId() == 1) {
+            this.init(startPoint, Direction.RIGHT);
         } else if (id.getId() == 2) {
-            currentPosition = new Point<>( 750.0,50.0);
-            this.currentDirection = Direction.DOWN;
+            this.init(startPoint, Direction.DOWN);
         } else if (id.getId() == 3) {
-            currentPosition = new Point<>(750.0,750.0);
-            this.currentDirection = Direction.LEFT;
+            this.init(startPoint, Direction.LEFT);
         } else {
-            currentPosition = new Point<>(50.0,750.0);
-            this.currentDirection = Direction.UP;
+            this.init(startPoint, Direction.UP);
         }
+    }
+
+    private void init(Point startPoint, Direction startDirection) {
+        this.currentPosition = startPoint;
+        this.currentDirection = startDirection;
         this.newDirection = currentDirection;
     }
 
-    public  void move(double timeDelay) {
-        final Point<Double> yMovr = new Point<>(0.0, velocity * timeDelay);
-        final Point<Double> xMove = new Point<>(velocity * timeDelay, 0.0);
-        final Double newVelocity = velocity * timeDelay;
-        if (currentDirection == Direction.RIGHT) {
-            currentPosition.setX(currentPosition.getX() + velocity);//newVelocity);
-        }
-        if (currentDirection == Direction.DOWN) {
-            currentPosition.setY(currentPosition.getY() + velocity);
-        }
-        if (currentDirection == Direction.LEFT) {
-            currentPosition.setX(currentPosition.getX() - velocity);
-        }
-        if (currentDirection == Direction.UP) {
-            currentPosition.setY(currentPosition.getY() - velocity);
+
+    public Point move(double timeDelay, int minBorder, int maxBorder) {
+        offset += velocity;
+        boolean isOnCell = offset / DISTANCE >= 1;
+        if (isOnCell) {
+            offset %= DISTANCE;
+            if (currentDirection == Direction.RIGHT) {
+                currentPosition.setX(currentPosition.getX() >= maxBorder ?
+                        maxBorder : currentPosition.getX() + 1);
+            }
+            if (currentDirection == Direction.DOWN) {
+                currentPosition.setY(currentPosition.getY() + 1 >= maxBorder ?
+                        maxBorder : currentPosition.getY() + 1);
+            }
+            if (currentDirection == Direction.LEFT) {
+                currentPosition.setX(currentPosition.getX() - 1 <= minBorder ?
+                        minBorder : currentPosition.getX() + 1);
+            }
+            if (currentDirection == Direction.UP) {
+                currentPosition.setY(currentPosition.getY() - 1 <=  minBorder ?
+                        minBorder : currentPosition.getY() + 1);
+            }
+
+            if (newDirection != null && currentDirection != newDirection) {
+                offset = 0;
+                currentDirection = newDirection;
+            }
         }
 
-        Double minCoordinate = (double)(SQUARE_SIZE / 2);
-        Double maxCoordinate = SQUARE_SIZE * DEFAULT_FILED_SIZE - minCoordinate;
+        return new Point(currentPosition.getX() % DISTANCE, currentPosition.getY() % DISTANCE);
 
-        if (currentPosition.getX() < minCoordinate) {
-            currentPosition.setX(minCoordinate);
-        }
+    }
 
-        if (currentPosition.getX() > maxCoordinate) {
-            currentPosition.setX(maxCoordinate);
-        }
-
-        if (currentPosition.getY() < minCoordinate) {
-            currentPosition.setY(minCoordinate);
-        }
-
-        if (currentPosition.getY() > maxCoordinate) {
-            currentPosition.setY(maxCoordinate);
-        }
-
-        if (((currentPosition.getX() - minCoordinate) % SQUARE_SIZE == 0) &&
-                ((currentPosition.getY() - minCoordinate) % SQUARE_SIZE == 0)) {
-            currentDirection = newDirection;
-        }
+    public Id<Player> getPlayerId() {
+        return playerId;
     }
 
 

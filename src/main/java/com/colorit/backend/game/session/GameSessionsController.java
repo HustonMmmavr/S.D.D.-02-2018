@@ -28,8 +28,8 @@ public class GameSessionsController {
     }
 
     // connected to lobby
-    public GameSession createSession() {
-        final GameSession gameSession = new GameSession(remotePointService);
+    public GameSession createSession(Integer fieldSize) {
+        final GameSession gameSession = new GameSession(remotePointService, fieldSize);
         gamesSessions.add(gameSession);
         // todo add session to list
 
@@ -61,6 +61,7 @@ public class GameSessionsController {
 
         }
         if (gameSession.isFullParty()) {
+            gameSession.startSession();
             gameSession.setStatus(GameSession.Status.FILLED);
             try {
                 for (Id<UserEntity> user : gameSession.getUsers()) {
