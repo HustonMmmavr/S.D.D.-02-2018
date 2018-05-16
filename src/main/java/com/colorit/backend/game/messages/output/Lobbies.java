@@ -6,10 +6,10 @@ import java.util.List;
 
 public class Lobbies extends Message {
     public static class OneLobby {
-        String owner;
-        long id;
-        String name;
-        long countPlayers;
+        private String owner;
+        private long id;
+        private String name;
+        private long countPlayers;
 
         public OneLobby(long id, String name, long countPlayers, String owner) {
             this.countPlayers = countPlayers;

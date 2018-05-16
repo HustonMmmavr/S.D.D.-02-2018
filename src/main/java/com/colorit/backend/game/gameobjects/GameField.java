@@ -1,21 +1,20 @@
 package com.colorit.backend.game.gameobjects;
 
 import com.colorit.backend.game.gameobjects.math.Point;
-import com.colorit.backend.game.session.GameSession;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameField extends GameObject {
     private Integer matrixRank;
-    private final static Integer INITIAL_FIELD_VALUE = 0;
+    private static final Integer INITIAL_FIELD_VALUE = 0;
     private List<List<Integer>> matrix;
     
     public GameField(int rank) {
         matrixRank = rank;
         matrix = new ArrayList<>(rank);
         for (int i = 0; i < rank; i++) {
-            List<Integer> row = new ArrayList<>(rank);
+            final List<Integer> row = new ArrayList<>(rank);
             for (int j = 0; j < rank; j++) {
                 row.add(INITIAL_FIELD_VALUE);
             }

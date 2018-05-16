@@ -2,7 +2,6 @@ package com.colorit.backend.game.mechanics;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.messages.output.ServerSnapshot;
 import com.colorit.backend.game.messages.services.ServerSnapshotService;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.gameobjects.Direction;

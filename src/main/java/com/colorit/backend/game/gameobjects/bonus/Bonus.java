@@ -5,6 +5,7 @@ import com.colorit.backend.game.gameobjects.Snap;
 
 public class Bonus extends GameObject {
 
+    @Override
     public BonusSnap getSnap() {
         return null;
     }

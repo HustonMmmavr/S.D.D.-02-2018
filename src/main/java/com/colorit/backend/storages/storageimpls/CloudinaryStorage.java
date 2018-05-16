@@ -42,7 +42,7 @@ public class CloudinaryStorage implements IStorage {
 
     @Override
     public byte[] readFile(String path) throws IOException {
-        try (InputStream in = new URL(path).openStream()) {
+        try (final InputStream in = new URL(path).openStream()) {
             return in.readAllBytes();
         }
     }

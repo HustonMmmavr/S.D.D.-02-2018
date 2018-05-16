@@ -1,8 +1,5 @@
 package com.colorit.backend.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public class Id<T> {
     private Long id;
     private String additionalInfo;

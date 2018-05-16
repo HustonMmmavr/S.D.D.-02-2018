@@ -5,9 +5,6 @@ import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.gameobjects.GameObject;
 import com.colorit.backend.game.gameobjects.Snap;
 import com.colorit.backend.game.gameobjects.math.Point;
-import com.fasterxml.jackson.databind.node.POJONode;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 import static com.colorit.backend.game.GameConfig.*;
 
@@ -48,7 +45,7 @@ public class Player extends GameObject {
 
     public Point move(double timeDelay, int minBorder, int maxBorder) {
         offset += velocity;
-        boolean isOnCell = offset / DISTANCE >= 1;
+        final boolean isOnCell = offset / DISTANCE >= 1;
         if (isOnCell) {
             offset %= DISTANCE;
             if (currentDirection == Direction.RIGHT) {
@@ -122,11 +119,12 @@ public class Player extends GameObject {
         return velocity;
     }
 
+    @Override
     public PlayerSnap getSnap() {
         return new PlayerSnap(this);
     }
 
-    public class PlayerSnap implements Snap<Player> {
+    public static class PlayerSnap implements Snap<Player> {
         private Point position;
         private Direction direction;
         private Integer score;

@@ -3,7 +3,6 @@ package com.colorit.backend.game.session;
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.messages.output.Connected;
-import com.colorit.backend.game.messages.output.GameStart;
 import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class GameSessionsController {
 
     private HashMap<Id<UserEntity>, GameSession> gameUserSessions = new HashMap<>();
 
-    GameSessionsController(@NotNull RemotePointService remotePointService) {
+    public GameSessionsController(@NotNull RemotePointService remotePointService) {
         this.remotePointService = remotePointService;
     }
 
@@ -65,7 +64,7 @@ public class GameSessionsController {
             gameSession.setStatus(GameSession.Status.FILLED);
             try {
                 for (Id<UserEntity> user : gameSession.getUsers()) {
-                    remotePointService.sendMessageToUser(user, new GameStart());
+                    remotePointService.sendMessageToUser(user, new Connected("s"));
                 }
             } catch (IOException err) {
                 LOGGER.error("GAME cant start");
@@ -73,28 +72,3 @@ public class GameSessionsController {
         }
     }
 }
-
-//    public void addUser(Id<UserEntity> userId) {
-//        currentSession.addUser(userId);
-//        gameUserSessions.put(userId, currentSession);
-//        try {
-//            remotePointService.sendMessageToUser( userId, new Connected("hi " + userId.getAdditionalInfo()));
-//        } catch (IOException ignore) {
-//
-//        }
-//        if (currentSession.isFullParty()) {
-//            gamesSessions.add(currentSession);
-//            currentSession.setStatus(GameSession.Status.FILLED);
-//            try {
-//                for (Id<UserEntity> uId : currentSession.getUsers()) {
-//                    remotePointService.sendMessageToUser(uId, new GameStart());
-//                    Thread.sleep(1000);
-//                }
-//            } catch (Exception e) { //IOException err) {
-//                LOGGER.error("GAME cant start");
-//            }
-//            currentSession = new GameSession(remotePointService);
-//        }
-//    }
-//    private GameSession currentSession;
-//        currentSession = new GameSession(remotePointService);

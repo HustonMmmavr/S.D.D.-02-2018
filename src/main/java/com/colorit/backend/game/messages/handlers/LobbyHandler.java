@@ -2,7 +2,6 @@ package com.colorit.backend.game.messages.handlers;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.lobby.Lobby;
 import com.colorit.backend.game.lobby.LobbyController;
 import com.colorit.backend.game.messages.input.LobbyMessage;
 import com.colorit.backend.websocket.HandleException;

@@ -57,8 +57,8 @@ public class GameSocketHandler extends TextWebSocketHandler {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
             return;
         }
-        UserEntity userEntity = (UserEntity) userServiceResponse.getData();
-        Id<UserEntity> uId = Id.of(userEntity.getId());
+        final UserEntity userEntity = (UserEntity) userServiceResponse.getData();
+        final Id<UserEntity> uId = Id.of(userEntity.getId());
         uId.setAdditionalInfo(nickname);
         idMap.put(nickname, uId);
         remotePointService.registerUser(uId, webSocketSession);

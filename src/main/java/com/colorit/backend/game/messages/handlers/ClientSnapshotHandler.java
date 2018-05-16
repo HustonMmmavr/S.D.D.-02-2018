@@ -15,8 +15,7 @@ import javax.validation.constraints.NotNull;
 public class ClientSnapshotHandler extends MessageHandler<ClientSnapshot> {
     @NotNull
     private final GameMechanics gameMechanics;
-    @NotNull
-    private final MessageHandlerContainer messageHandlerContainer;
+    private final @NotNull MessageHandlerContainer messageHandlerContainer;
 
     public ClientSnapshotHandler(@NotNull GameMechanics gameMechanics,
                           @NotNull MessageHandlerContainer messageHandlerContainer) {

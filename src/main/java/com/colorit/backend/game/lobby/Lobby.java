@@ -52,7 +52,7 @@ public class Lobby {
     }
 
     public boolean changeOwner() {
-        if (associatedSession.getUsers().size() == 0) {
+        if (associatedSession.getUsers().isEmpty()) {
             return false;
         }
         ownerId = associatedSession.getUsers().get(0);

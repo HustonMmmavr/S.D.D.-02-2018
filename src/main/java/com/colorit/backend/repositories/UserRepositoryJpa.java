@@ -67,7 +67,7 @@ public class UserRepositoryJpa {
     }
 
     public void save(UserEntity userEntity) {
-        GameResults gameResults = new GameResults();
+        final GameResults gameResults = new GameResults();
         entityManager.persist(userEntity);
         entityManager.persist(gameResults);
         userEntity.setGameResults(gameResults);

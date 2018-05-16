@@ -24,12 +24,11 @@ public class ServerSnapshot extends Message {
 
     public static ServerSnapshot getSnapshot(GameSession gameSession) {
         final List<Player.PlayerSnap> playerSnaps = new ArrayList<>();
-        final List<Bonus.BonusSnap> bonusSnaps = new ArrayList<>();
         final GameField.GameFieldSnap gameFieldSnap = gameSession.getGameField().getSnap();
         gameSession.getPlayers().forEach(player -> playerSnaps.add(player.getSnap()));
+        final List<Bonus.BonusSnap> bonusSnaps = new ArrayList<>();
         gameSession.getBonuses().forEach(bonus -> bonusSnaps.add(bonus.getSnap()));
-        final ServerSnapshot snapshot = new ServerSnapshot(gameFieldSnap, playerSnaps, bonusSnaps);
-        return snapshot;
+        return new ServerSnapshot(gameFieldSnap, playerSnaps, bonusSnaps);
     }
 
     public GameField.GameFieldSnap getGameFieldSnap() {

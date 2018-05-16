@@ -2,7 +2,6 @@ package com.colorit.backend.controllers;
 
 import com.colorit.backend.common.AbstractResponseMaker;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.validation.constraints.NotNull;
 

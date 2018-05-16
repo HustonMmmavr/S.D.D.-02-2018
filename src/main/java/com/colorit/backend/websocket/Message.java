@@ -12,9 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @Type(ShowLobbies.Request.class),
         @Type(Connected.class),
-        @Type(GameStart.class),
-        @Type(Position.class),
-        @Type(GameStart.class),
         @Type(ClientSnapshot.class),
         @Type(LobbyMessage.class),
         @Type(LobbyError.class),

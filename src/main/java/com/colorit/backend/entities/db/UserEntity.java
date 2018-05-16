@@ -144,7 +144,7 @@ public class UserEntity {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         return sb.append("{\"nickname\": ").append(nickname).append(" ").append("\"id\": ").append(id).append("}").toString();
     }
 }

@@ -7,12 +7,10 @@ import com.colorit.backend.game.gameobjects.GameField;
 import com.colorit.backend.game.gameobjects.bonus.Bonus;
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.game.gameobjects.players.Player;
-import com.colorit.backend.game.messages.output.Position;
 import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
