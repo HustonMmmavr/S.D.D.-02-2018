@@ -4,6 +4,7 @@ import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.gameobjects.GameField;
+import com.colorit.backend.game.gameobjects.bonus.Bonus;
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.game.gameobjects.players.Player;
 import com.colorit.backend.game.messages.output.Position;
@@ -75,6 +76,14 @@ public class GameSession {
         }
     }
 
+    public List<Bonus> getBonuses() {
+        return new ArrayList<>();
+    }
+
+    public GameField getGameField() {
+        return gameField;
+    }
+
 
     public void removeUser(Id<UserEntity> uId) {
         users.remove(uId);
@@ -94,19 +103,19 @@ public class GameSession {
         );
     }
 
-    public void sendGameInfo() {
-        List<Point> points = new ArrayList<>();
-
-        players.forEach(player -> points.add(player.getPosition()));
-        Position position = new Position(points);
-        try {
-            for (Id<UserEntity> user : users) {
-                remotePointService.sendMessageToUser(user, position);
-            }
-        } catch (IOException ex) {
-            LOGGER.error("error send info");
-        }
-    }
+//    public void sendGameInfo() {
+//        List<Point> points = new ArrayList<>();
+//
+//        players.forEach(player -> points.add(player.getPosition()));
+//        Position position = new Position(points);
+//        try {
+//            for (Id<UserEntity> user : users) {
+//                remotePointService.sendMessageToUser(user, position);
+//            }
+//        } catch (IOException ex) {
+//            LOGGER.error("error send info");
+//        }
+//    }
 
     public boolean isFullParty() {
         return users.size() == FULL_PARTY;

@@ -18,7 +18,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(ClientSnapshot.class),
         @Type(LobbyMessage.class),
         @Type(LobbyError.class),
-        @Type(LobbyUsers.class)
+        @Type(LobbyUsers.class),
+        @Type(ServerSnapshot.class)
 })
 public abstract class Message {
 }

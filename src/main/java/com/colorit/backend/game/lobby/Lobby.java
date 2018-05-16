@@ -12,9 +12,9 @@ public class Lobby {
     private Id<UserEntity> ownerId;
     private final Id<Lobby> id;
     private final GameSession associatedSession;
-    private final Integer fieldSize;
-    private final Integer gameTime;
-    private final Boolean isMultiplayer;
+//    private final Integer fieldSize;\
+//    private final Integer gameTime;
+//    private final Boolean isMultiplayer;
     private State state;
 
     public enum State {
@@ -30,9 +30,9 @@ public class Lobby {
         this.ownerId = ownerId;
         id.setAdditionalInfo(lobbySettings.getName());
         this.associatedSession = gameSession;
-        this.fieldSize = lobbySettings.getFieldSize();
-        this.gameTime = lobbySettings.getGameTime();
-        this.isMultiplayer = lobbySettings.getMultiplayer();
+//        this.fieldSize = lobbySettings.getFieldSize();
+//        this.gameTime = lobbySettings.getGameTime();
+//        this.isMultiplayer = lobbySettings.getMultiplayer();
     }
 
     public Id<UserEntity> getOwnerId() {

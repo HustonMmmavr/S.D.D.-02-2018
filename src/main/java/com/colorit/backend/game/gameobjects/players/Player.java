@@ -3,6 +3,7 @@ package com.colorit.backend.game.gameobjects.players;
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.gameobjects.GameObject;
+import com.colorit.backend.game.gameobjects.Snap;
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.fasterxml.jackson.databind.node.POJONode;
 
@@ -74,7 +75,6 @@ public class Player extends GameObject {
         }
 
         return new Point(currentPosition.getX() % DISTANCE, currentPosition.getY() % DISTANCE);
-
     }
 
     public Id<Player> getPlayerId() {
@@ -96,5 +96,100 @@ public class Player extends GameObject {
 
     public void setDirection(Direction newDirection) {
         this.newDirection = newDirection;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public Direction getCurrentDirection() {
+        return currentDirection;
+    }
+
+    public Direction getNewDirection() {
+        return newDirection;
+    }
+
+    public Point getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public Integer getVelocity() {
+        return velocity;
+    }
+
+    public PlayerSnap getSnap() {
+        return new PlayerSnap(this);
+    }
+
+    public class PlayerSnap implements Snap<Player> {
+        private Point position;
+        private Direction direction;
+        private Integer score;
+        private Integer id;
+        private Integer velocity;
+        private Direction newDirection;
+
+//        public PlayerSnap(Direction direction, Integer score, Integer id, Integer velocity, Direction newDirection) {
+        public PlayerSnap(Player player) {
+            this.position = player.getPosition();
+            this.direction = player.getCurrentDirection();
+            this.score = player.getScore();
+            this.id = (int) player.getPlayerId().getId();
+            this.velocity = player.getVelocity();
+            this.newDirection = player.getNewDirection();
+        }
+
+        public Point getPosition() {
+            return position;
+        }
+
+        public void setPosition(Point position) {
+            this.position = position;
+        }
+
+        public Direction getDirection() {
+            return direction;
+        }
+
+        public void setDirection(Direction direction) {
+            this.direction = direction;
+        }
+
+        public Integer getScore() {
+            return score;
+        }
+
+        public void setScore(Integer score) {
+            this.score = score;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public Integer getVelocity() {
+            return velocity;
+        }
+
+        public void setVelocity(Integer velocity) {
+            this.velocity = velocity;
+        }
+
+        public Direction getNewDirection() {
+            return newDirection;
+        }
+
+        public void setNewDirection(Direction newDirection) {
+            this.newDirection = newDirection;
+        }
     }
 }

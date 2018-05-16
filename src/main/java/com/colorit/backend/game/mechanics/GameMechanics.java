@@ -2,6 +2,8 @@ package com.colorit.backend.game.mechanics;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
+import com.colorit.backend.game.messages.output.ServerSnapshot;
+import com.colorit.backend.game.messages.services.ServerSnapshotService;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.messages.input.ClientSnapshot;
@@ -19,6 +21,10 @@ public class GameMechanics implements IGameMechanics {
     @NotNull
     private final RemotePointService remotePointService;
 
+    @NotNull
+    private final ServerSnapshotService serverSnapshotService;
+
+
 
 
     @Override
@@ -28,9 +34,11 @@ public class GameMechanics implements IGameMechanics {
     }
 
     GameMechanics(@NotNull GameSessionsController gameSessionsController,
-                  @NotNull RemotePointService remotePointService) {
+                  @NotNull RemotePointService remotePointService,
+                  @NotNull ServerSnapshotService serverSnapshotService) {
         this.remotePointService = remotePointService;
         this.gameSessionsController = gameSessionsController;
+        this.serverSnapshotService = serverSnapshotService;
     }
 
     @Override
@@ -47,7 +55,8 @@ public class GameMechanics implements IGameMechanics {
             for (GameSession gameSession : gameSessionsController.getGameSessions()) {
                 if (gameSession.isFullParty()) {
                     gameSession.movePlayers(frameTime);
-                    gameSession.sendGameInfo();
+                    //gameSession.sendGameInfo();
+                    serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
                     //Thread.sleep(1000);
                 }
             }

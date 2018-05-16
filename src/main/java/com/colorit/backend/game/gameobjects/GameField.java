@@ -1,13 +1,14 @@
 package com.colorit.backend.game.gameobjects;
 
 import com.colorit.backend.game.gameobjects.math.Point;
+import com.colorit.backend.game.session.GameSession;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameField extends GameObject {
     private Integer matrixRank;
-    private Integer INITIAL_FIELD_VALUE = 0;
+    private final static Integer INITIAL_FIELD_VALUE = 0;
     private List<List<Integer>> matrix;
     
     public GameField(int rank) {
@@ -28,16 +29,6 @@ public class GameField extends GameObject {
 
     public void markCell(Point position, long id) {
         markCell(position.getY(), position.getX(), (int) id);
-//        this.matrix.get((position.getX())).set(position.getY(), (int) id);
-    }
-
-    public void print() {
-        for(List<Integer> row : matrix) {
-//            for (Integer data: row) {
-//                System.out.print(data);
-//            }
-//            System.out.println();
-        }
     }
 
     public int searchLoop(long id) {
@@ -50,12 +41,24 @@ public class GameField extends GameObject {
     }
 
 
+    public List<List<Integer>> getMatrix() {
+        return matrix;
+    }
 
+    @Override
+    public GameFieldSnap getSnap() {
+        return new GameFieldSnap(this);
+    }
 
+    public static class GameFieldSnap implements Snap<GameField> {
+        private List<List<Integer>> field;
+        public GameFieldSnap(GameField gameField) {
+            this.field = gameField.getMatrix();
+        }
 
-    // implement
-    public void findCycle() {
-
+        public List<List<Integer>> getField() {
+            return field;
+        }
     }
 
 

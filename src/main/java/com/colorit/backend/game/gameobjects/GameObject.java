@@ -17,4 +17,8 @@ public class GameObject {
     public Id<?> getId() {
         return id;
     }
+
+    public Snap<? extends GameObject> getSnap() {
+        return null;
+    }
 }
