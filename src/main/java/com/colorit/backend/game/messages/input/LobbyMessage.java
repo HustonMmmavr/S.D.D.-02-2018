@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LobbyMessage extends Message {
     private LobbySettings settings;
     private Action action;
-    private long id;
+    private Long lobbyId;
 
     public enum Action {
         @JsonProperty("CREATE")
@@ -19,7 +19,8 @@ public class LobbyMessage extends Message {
         @JsonProperty("CHAT")
         CHAT,
         @JsonProperty("USERS")
-        USERS
+        USERS,
+        //todo add new message to start
     }
 
 
@@ -32,7 +33,7 @@ public class LobbyMessage extends Message {
     // its need when we try connect to lobby
     @JsonProperty("id")
     public Long getLobbyId() {
-        return id;
+        return lobbyId;
     }
 
     public void setSettings(LobbySettings settings) {

@@ -10,12 +10,16 @@ public class Lobbies extends Message {
         private long id;
         private String name;
         private long countPlayers;
+        private int fieldSize;
+        private long gameTime;
 
-        public OneLobby(long id, String name, long countPlayers, String owner) {
+        public OneLobby(long id, String name, long countPlayers, String owner, int fieldSize, long gameTime) {
             this.countPlayers = countPlayers;
             this.name = name;
             this.owner = owner;
             this.id = id;
+            this.fieldSize = fieldSize;
+            this.gameTime = gameTime;
         }
 
         public String getOwner() {
@@ -48,6 +52,14 @@ public class Lobbies extends Message {
 
         public void setCountPlayers(long countPlayers) {
             this.countPlayers = countPlayers;
+        }
+
+        public int getFieldSize() {
+            return fieldSize;
+        }
+
+        public long getGameTime() {
+            return gameTime;
         }
     }
 

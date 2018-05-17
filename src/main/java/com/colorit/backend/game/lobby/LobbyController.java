@@ -23,7 +23,6 @@ public class LobbyController {
 
     private final HashMap<Id<Lobby>, Lobby> lobbiesMap = new HashMap<>();
     private final Set<Lobby> lobbies = new HashSet<>();
-//    private final Set<Id<Lobby>> activeLobbies = new HashSet<>();
 
     public LobbyController(@NotNull GameSessionsController gameSessionsController,
                            @NotNull RemotePointService remotePointService) {
@@ -33,7 +32,7 @@ public class LobbyController {
 
     public void addUser(Id<Lobby> lId, Id<UserEntity> uId) {
         final Lobby lobby = lobbiesMap.get(lId);
-        if (lId == null) {
+        if (lId == null || lobbiesMap.get(lId) == null) {
             try {
                 remotePointService.sendMessageToUser(uId, new LobbyError("Sorry lobby not found"));
             } catch (IOException ignore) {
@@ -82,7 +81,9 @@ public class LobbyController {
             for (Id<Lobby> lId : lobbiesMap.keySet()) {
                 final Lobby lobby = lobbiesMap.get(lId);
                 if (lobby != null && lobby.isActive()) {
-                    lobbiesList.add(new Lobbies.OneLobby(lId.getId(), lId.getAdditionalInfo(), lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo()));
+                    lobbiesList.add(new Lobbies.OneLobby(lId.getId(), lId.getAdditionalInfo(),
+                            lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
+                            lobby.getFiledSize(), lobby.getGameTime()));
                 }
             }
             remotePointService.sendMessageToUser(uId, new Lobbies(lobbiesList));
@@ -91,10 +92,18 @@ public class LobbyController {
     }
 
     public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
-        final GameSession gameSession = gameSessionsController.createSession(lobbySettings.getFieldSize());
-        gameSessionsController.addUser(uId, gameSession);
-        final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
-        lobbiesMap.put(lobby.getId(), lobby);
-        lobbies.add(lobby);
+        try {
+            if (gameSessionsController.getGameUserSessions().get(uId) != null) {
+                remotePointService.sendMessageToUser(uId, new LobbyError("You cant create while you already play"));
+                return;
+            }
+            final GameSession gameSession = gameSessionsController.createSession(lobbySettings.getFieldSize(),
+                    lobbySettings.getGameTime());
+            gameSessionsController.addUser(uId, gameSession);
+            final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
+            lobbiesMap.put(lobby.getId(), lobby);
+            lobbies.add(lobby);
+        } catch (IOException ignore) {
+        }
     }
 }

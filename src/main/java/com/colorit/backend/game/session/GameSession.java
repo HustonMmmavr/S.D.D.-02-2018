@@ -21,7 +21,7 @@ import static com.colorit.backend.game.GameConfig.MIN_BORDER;
 public class GameSession {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSession.class);
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private static final int FULL_PARTY = 1;
+    private static final int FULL_PARTY = 2;
 
     // TODO
     private List<Id<UserEntity>> users = new ArrayList<>();
@@ -31,12 +31,17 @@ public class GameSession {
     private GameField gameField;
     private Status sessionStatus;
     private RemotePointService remotePointService;
+    private final GameSessionsController gameSessionsController;
+    private long gameTime;
 
-    public GameSession(RemotePointService remotePointService, int fieldSize) {
+    public GameSession(RemotePointService remotePointService, GameSessionsController gameSessionsController,
+                       int fieldSize, long gameTime) {
+        this.gameSessionsController = gameSessionsController;
         id = Id.of(ID_GENERATOR.getAndIncrement());
         gameField = new GameField(fieldSize);
         sessionStatus = Status.CREATED;
         this.remotePointService = remotePointService;
+        this.gameTime = gameTime;
     }
 
     public enum Status {
@@ -65,8 +70,8 @@ public class GameSession {
     public void startSession() {
         long playerId = 1;
         for (Id<UserEntity> user: users) {
-            final Point startPoint = new Point(playerId == 1 || playerId == 4  ?  0 : gameField.getRank() ,
-                    playerId < 3 ? 0 : gameField.getRank());
+            final Point startPoint = new Point(playerId == 1 || playerId == 4  ?  0 : gameField.getRank() - 1 ,
+                    playerId < 3 ? 0 : gameField.getRank() - 1);
             final Player player = new Player(user.getAdditionalInfo(), Id.of(playerId), startPoint);
             playerId += 1;
             playersMap.put(user, player);
@@ -93,6 +98,18 @@ public class GameSession {
     public void changeDirection(Id<UserEntity> uId, Direction direction) {
         final Player player = playersMap.get(uId);
         player.setDirection(direction);
+    }
+
+    public void terminateSession() {
+        gameSessionsController.terminateSession(this, true);
+    }
+
+    public int getFieldSize() {
+        return gameField.getRank();
+    }
+
+    public long getGameTime() {
+        return gameTime;
     }
 
     public void movePlayers(long delay) {

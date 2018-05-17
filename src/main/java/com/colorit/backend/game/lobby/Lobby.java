@@ -35,6 +35,14 @@ public class Lobby {
 //        this.isMultiplayer = lobbySettings.getMultiplayer();
     }
 
+    public int getFiledSize() {
+        return associatedSession.getFieldSize();
+    }
+
+    public long getGameTime() {
+        return associatedSession.getGameTime();
+    }
+
     public Id<UserEntity> getOwnerId() {
         return ownerId;
     }

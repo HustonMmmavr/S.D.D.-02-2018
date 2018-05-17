@@ -27,11 +27,9 @@ public class GameSessionsController {
     }
 
     // connected to lobby
-    public GameSession createSession(Integer fieldSize) {
-        final GameSession gameSession = new GameSession(remotePointService, fieldSize);
+    public GameSession createSession(Integer fieldSize, long gameTime) {
+        final GameSession gameSession = new GameSession(remotePointService, this, fieldSize, gameTime);
         gamesSessions.add(gameSession);
-        // todo add session to list
-
         return gameSession;
     }
 
@@ -51,10 +49,19 @@ public class GameSessionsController {
         gameSession.removeUser(uId);
     }
 
+    public void terminateSession(GameSession gameSession, boolean terminat) {
+
+    }
+
     public void addUser(Id<UserEntity> uId, GameSession gameSession) {
-        gameUserSessions.put(uId, gameSession);
-        gameSession.addUser(uId);
         try {
+            // check that this user not playing already
+            if (gameUserSessions.get(uId) != null) {
+                remotePointService.sendMessageToUser(uId, new Connected("Error"));
+                return;
+            }
+            gameUserSessions.put(uId, gameSession);
+            gameSession.addUser(uId);
             remotePointService.sendMessageToUser( uId, new Connected("hi " + uId.getAdditionalInfo()));
         } catch (IOException ignore) {
 

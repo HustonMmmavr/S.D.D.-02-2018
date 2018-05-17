@@ -27,9 +27,9 @@ public class Player extends GameObject {
 
         if (playerId.getId() == 1) {
             this.init(startPoint, Direction.RIGHT);
-        } else if (id.getId() == 2) {
+        } else if (playerId.getId() == 2) {
             this.init(startPoint, Direction.DOWN);
-        } else if (id.getId() == 3) {
+        } else if (playerId.getId() == 3) {
             this.init(startPoint, Direction.LEFT);
         } else {
             this.init(startPoint, Direction.UP);
@@ -53,16 +53,16 @@ public class Player extends GameObject {
                         maxBorder : currentPosition.getX() + 1);
             }
             if (currentDirection == Direction.DOWN) {
-                currentPosition.setY(currentPosition.getY() + 1 >= maxBorder ?
+                currentPosition.setY(currentPosition.getY() >= maxBorder ?
                         maxBorder : currentPosition.getY() + 1);
             }
             if (currentDirection == Direction.LEFT) {
-                currentPosition.setX(currentPosition.getX() - 1 <= minBorder ?
-                        minBorder : currentPosition.getX() + 1);
+                currentPosition.setX(currentPosition.getX() <= minBorder ?
+                        minBorder : currentPosition.getX() - 1);
             }
             if (currentDirection == Direction.UP) {
-                currentPosition.setY(currentPosition.getY() - 1 <=  minBorder ?
-                        minBorder : currentPosition.getY() + 1);
+                currentPosition.setY(currentPosition.getY() <=  minBorder ?
+                        minBorder : currentPosition.getY() - 1);
             }
 
             if (newDirection != null && currentDirection != newDirection) {
