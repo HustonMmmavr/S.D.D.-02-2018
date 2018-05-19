@@ -1,7 +1,7 @@
 package com.colorit.backend.game.messages.output;
 
 import com.colorit.backend.websocket.Message;
-
+//state
 public class LobbyInfoMessage extends Message {
     private Long lobbyId;
     private Long userId;

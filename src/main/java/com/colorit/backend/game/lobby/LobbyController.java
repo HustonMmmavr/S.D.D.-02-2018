@@ -26,6 +26,8 @@ public class LobbyController {
     private final IUserService userService;
 
     private final HashMap<Id<Lobby>, Lobby> lobbiesMap = new HashMap<>();
+    private final Set<Id<UserEntity>> freeUsers = new HashSet<>();
+//    private final HashMap<Id<Lobby>, Id<UserEntity>> lobbyUserMap = new HashMap<>();
     private final Set<Lobby> lobbies = new HashSet<>();
 
     public LobbyController(@NotNull GameSessionsController gameSessionsController,
@@ -55,6 +57,9 @@ public class LobbyController {
         } catch (IOException e) {
 
         }
+
+        freeUsers.remove(uId);
+//        lobbyUserMap.put(lId, uId);
 //        try {
         gameSessionsController.addUser(uId, lobby.getAssociatedSession());
         //remotePointService.sendMessageToUser(uId, new LobbyConnected());
@@ -86,6 +91,7 @@ public class LobbyController {
 
         }
 
+        freeUsers.add(uId);
         gameSessionsController.removeUser(uId, lobby.getAssociatedSession());
         if (lobby.getAssociatedSession().getUsers().isEmpty()) {
             gameSessionsController.deleteSession(lobby.getAssociatedSession());
@@ -111,6 +117,8 @@ public class LobbyController {
 
     public void getLobbies(Id<UserEntity> uId) {
         try {
+            // is it safe?
+            freeUsers.add(uId);
             final List<OneLobbyInfo> lobbiesList = new ArrayList<>();
             for (Id<Lobby> lId : lobbiesMap.keySet()) {
                 final Lobby lobby = lobbiesMap.get(lId);
@@ -137,10 +145,14 @@ public class LobbyController {
             final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
             lobbiesMap.put(lobby.getId(), lobby);
             lobbies.add(lobby);
-            remotePointService.sendMessageToUser(uId, new OneLobbyInfo(lobby.getId().getId(),
-                    lobby.getId().getAdditionalInfo(),
-                    lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
-                    lobby.getFiledSize(), lobby.getGameTime()));
+            for (Id<UserEntity> user: freeUsers) {
+                remotePointService.sendMessageToUser(user, new OneLobbyInfo(lobby.getId().getId(),
+                        lobby.getId().getAdditionalInfo(),
+                        lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
+                        lobby.getFiledSize(), lobby.getGameTime()));
+            }
+            freeUsers.remove(uId);
+//            lobbyUserMap.put(lobby.getId(), uId);
         } catch (IOException ignore) {
         }
     }
