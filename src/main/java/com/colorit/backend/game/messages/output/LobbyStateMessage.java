@@ -1,8 +1,8 @@
 package com.colorit.backend.game.messages.output;
 
 import com.colorit.backend.websocket.Message;
-//state
-public class LobbyInfoMessage extends Message {
+//statee
+public class LobbyStateMessage extends Message {
     private Long lobbyId;
     private Long userId;
     private Action action;
@@ -11,7 +11,7 @@ public class LobbyInfoMessage extends Message {
         DISCONNECTED
     }
 
-    public LobbyInfoMessage(Long lobbyId, Long userId, Action action) {
+    public LobbyStateMessage(Long lobbyId, Long userId, Action action) {
         this.lobbyId = lobbyId;
         this.userId = userId;
         this.action = action;

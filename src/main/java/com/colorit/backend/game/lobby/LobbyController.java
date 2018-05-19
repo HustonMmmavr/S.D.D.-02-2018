@@ -6,11 +6,9 @@ import com.colorit.backend.game.messages.output.*;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.services.IUserService;
-import com.colorit.backend.services.UserServiceJpa;
 import com.colorit.backend.websocket.RemotePointService;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
@@ -49,25 +47,66 @@ public class LobbyController {
             return;
         }
 
+        freeUsers.remove(uId);
+        lobby.getUsers().add(uId);
         try {
-            for (Id<UserEntity> user : lobby.getUsers()) {
-                remotePointService.sendMessageToUser(user, new LobbyInfoMessage(lId.getId(), uId.getId(),
-                        LobbyInfoMessage.Action.CONNECTED));
+            for (Id<UserEntity> user: lobby.getUsers()) {
+                remotePointService.sendMessageToUser(user, new LobbyStateMessage(lId.getId(), uId.getId(),
+                        LobbyStateMessage.Action.CONNECTED));
             }
         } catch (IOException e) {
 
         }
-
-        freeUsers.remove(uId);
-//        lobbyUserMap.put(lId, uId);
-//        try {
         gameSessionsController.addUser(uId, lobby.getAssociatedSession());
-        //remotePointService.sendMessageToUser(uId, new LobbyConnected());
+//        try {
+//            remotePointService.sendMessageToUser(uId, new LobbyStateMessage(lId.getId(), ));
+//
+//        } catch (IOException io) {
+//
+//        }
     }
 
     private boolean insureCandidate(@NotNull Id<UserEntity> candidate) {
         return remotePointService.isConnected(candidate)
                 && userService.getUser(candidate.getAdditionalInfo()) != null;
+    }
+
+    public void startLobby(Id<UserEntity> uId, Id<Lobby> lId) {
+        final Lobby lobby = lobbiesMap.get(lId);
+        if (lId == null) {
+            try {
+                remotePointService.sendMessageToUser(uId, new LobbyError("Sorry lobby not found"));
+            } catch (IOException ignore) {
+
+            }
+            return;
+        }
+
+        if (!uId.equals(lobby.getOwnerId())) {
+            try {
+                remotePointService.sendMessageToUser(uId, new LobbyError("You cant start lobby"));
+            } catch (IOException ignore) {
+            }
+            return;
+        }
+
+        List<Id<UserEntity>> problemUsers = new ArrayList<>();
+        for (Id<UserEntity> user : lobby.getUsers()) {
+            if (!insureCandidate(user)) {
+                problemUsers.add(user);
+            }
+        }
+        if (!problemUsers.isEmpty()) {
+            problemUsers.forEach(user -> lobby.getUsers().remove(user));
+            try {
+                for (Id<UserEntity> user: lobby.getUsers()) {
+                    remotePointService.sendMessageToUser(user, new LobbyError("You cant start game, some users disconnetcted"));
+                }
+            } catch (IOException ignore) {
+            }
+        } else {
+            lobby.getAssociatedSession().startSession();
+        }
     }
 
 
@@ -84,8 +123,8 @@ public class LobbyController {
 
         try {
             for (Id<UserEntity> user : lobby.getUsers()) {
-                remotePointService.sendMessageToUser(user, new LobbyInfoMessage(lId.getId(), uId.getId(),
-                        LobbyInfoMessage.Action.DISCONNECTED));
+                remotePointService.sendMessageToUser(user, new LobbyStateMessage(lId.getId(), uId.getId(),
+                        LobbyStateMessage.Action.DISCONNECTED));
             }
         } catch (IOException e) {
 
@@ -152,8 +191,11 @@ public class LobbyController {
                         lobby.getFiledSize(), lobby.getGameTime()));
             }
             freeUsers.remove(uId);
-//            lobbyUserMap.put(lobby.getId(), uId);
         } catch (IOException ignore) {
         }
     }
 }
+
+//        lobbyUserMap.put(lId, uId);
+//        try {
+//            lobbyUserMap.put(lobby.getId(), uId);

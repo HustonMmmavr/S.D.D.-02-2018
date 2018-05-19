@@ -2,7 +2,7 @@ package com.colorit.backend.game.session;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.messages.output.Connected;
+import com.colorit.backend.game.messages.output.LobbyError;
 import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,24 +54,15 @@ public class GameSessionsController {
     }
 
     public void addUser(Id<UserEntity> uId, GameSession gameSession) {
-        try {
-            // check that this user not playing already
-            if (gameUserSessions.get(uId) != null) {
-                remotePointService.sendMessageToUser(uId, new Connected("Error"));
-                return;
-            }
+
             gameUserSessions.put(uId, gameSession);
             gameSession.addUser(uId);
-            remotePointService.sendMessageToUser( uId, new Connected("hi " + uId.getAdditionalInfo()));
-        } catch (IOException ignore) {
-
-        }
         if (gameSession.isFullParty()) {
             gameSession.startSession();
             gameSession.setStatus(GameSession.Status.FILLED);
             try {
                 for (Id<UserEntity> user : gameSession.getUsers()) {
-                    remotePointService.sendMessageToUser(user, new Connected("s"));
+                    remotePointService.sendMessageToUser(user, new LobbyError("s"));
                 }
             } catch (IOException err) {
                 LOGGER.error("GAME cant start");
@@ -79,3 +70,15 @@ public class GameSessionsController {
         }
     }
 }
+
+//        try {
+// check that this user not playing already
+//            if (gameUserSessions.get(uId) != null) {
+//                remotePointService.sendMessageToUser(uId, new Connected("Error"));
+//                return;
+//            }
+
+//            remotePointService.sendMessageToUser( uId, new Connected("hi " + uId.getAdditionalInfo()));
+//        } catch (IOException ignore) {
+//
+//        }

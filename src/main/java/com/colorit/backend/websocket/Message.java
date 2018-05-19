@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "class")
 @JsonSubTypes({
         @Type(ShowLobbies.Request.class),
-        @Type(Connected.class),
+        @Type(LobbyStateMessage.class),
         @Type(ClientSnapshot.class),
         @Type(LobbyMessage.class),
         @Type(LobbyError.class),

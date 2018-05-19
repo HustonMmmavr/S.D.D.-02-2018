@@ -21,7 +21,7 @@ import static com.colorit.backend.game.GameConfig.MIN_BORDER;
 public class GameSession {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSession.class);
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private static final int FULL_PARTY = 1;
+    private static final int FULL_PARTY = 2;
 
     private List<Id<UserEntity>> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
