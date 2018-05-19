@@ -95,13 +95,16 @@ public class GameMechanics implements IGameMechanics {
         final List<GameSession> sessionsToFinish = new ArrayList<>();
         for (GameSession session : gameSessionsController.getGameSessions()) {
 
-            if (session.isFullParty()) {
-                session.movePlayers(frameTime);
-                session.subTime(frameTime);
-                serverSnapshotService.sendSnapshotsFor(session, frameTime);
-//                    Thread.sleep(1000);
-            }
+            try {
+                if (session.isFullParty()) {
+                    session.movePlayers(frameTime);
+                    session.subTime(frameTime);
+                    serverSnapshotService.sendSnapshotsFor(session, frameTime);
+                    Thread.sleep(1000);
+                }
+            } catch (Exception e) {
 
+            }
             // session needs to knew how mony time its playing
             // gamefield genrate bonus
             // todo add task that removes this effect or player stores itself its time

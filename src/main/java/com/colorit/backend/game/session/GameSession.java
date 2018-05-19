@@ -21,9 +21,8 @@ import static com.colorit.backend.game.GameConfig.MIN_BORDER;
 public class GameSession {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSession.class);
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private static final int FULL_PARTY = 2;
+    private static final int FULL_PARTY = 1;
 
-    // TODO
     private List<Id<UserEntity>> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private HashMap<Id<UserEntity>, Player> playersMap = new HashMap<>();
@@ -67,7 +66,6 @@ public class GameSession {
             sessionStatus = Status.FINISHED;
         }
     }
-
 
     public boolean isFinised() {
         return sessionStatus == Status.FINISHED;
@@ -127,28 +125,20 @@ public class GameSession {
     }
 
     public void movePlayers(long delay) {
-        players.forEach(player ->
-            gameField.markCell(player.move((double) delay, MIN_BORDER, gameField.getRank() - 1), player.getPlayerId().getId())
-        );
+        players.forEach(player -> {
+            if (player.move((double) delay, MIN_BORDER, gameField.getRank() - 1)) {
+                gameField.markCell(player.getPosition(), player.getPlayerId().getId());
+                if (player.isAddScore()) {
+                    player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
+                    player.setAddScore(false);
+                } else {
+                    gameField.checkArea(player.getPosition(), (int)player.getPlayerId().getId());
+                }
+            }
+        });
     }
 
     public boolean isFullParty() {
         return users.size() == FULL_PARTY;
     }
 }
-
-
-
-//    public void sendGameInfo() {
-//        List<Point> points = new ArrayList<>();
-//
-//        players.forEach(player -> points.add(player.getPosition()));
-//        Position position = new Position(points);
-//        try {
-//            for (Id<UserEntity> user : users) {
-//                remotePointService.sendMessageToUser(user, position);
-//            }
-//        } catch (IOException ex) {
-//            LOGGER.error("error send info");
-//        }
-//    }

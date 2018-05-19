@@ -17,6 +17,7 @@ public class Player extends GameObject {
     protected Point currentPosition;
     protected Integer velocity = DEFAULT_VELOCITY;
     protected Id<Player> playerId;
+    protected boolean addScore;
 
     public Player(String nickname, Id<Player> playerId, Point startPoint) {
         this.nickname = nickname;
@@ -24,6 +25,7 @@ public class Player extends GameObject {
         this.playerId = playerId;
         this.offset = 0;
         this.currentPosition = startPoint;
+        this.addScore = false;
 
         if (playerId.getId() == 1) {
             this.init(startPoint, Direction.RIGHT);
@@ -36,6 +38,15 @@ public class Player extends GameObject {
         }
     }
 
+
+    public boolean isAddScore() {
+        return addScore;
+    }
+
+    public void setAddScore(boolean addScore) {
+        this.addScore = addScore;
+    }
+
     private void init(Point startPoint, Direction startDirection) {
         this.currentPosition = startPoint;
         this.currentDirection = startDirection;
@@ -43,7 +54,7 @@ public class Player extends GameObject {
     }
 
 
-    public Point move(double timeDelay, int minBorder, int maxBorder) {
+    public boolean move(double timeDelay, int minBorder, int maxBorder) {
 //        int newtimeDelay / ONE_STEP_TIME * velocity;
         offset += timeDelay / ONE_TIME_STEP * velocity;
         final boolean isOnCell = offset / DISTANCE >= 1;
@@ -72,7 +83,7 @@ public class Player extends GameObject {
             }
         }
 
-        return new Point(currentPosition.getX() % DISTANCE, currentPosition.getY() % DISTANCE);
+        return isOnCell;
     }
 
     public Id<Player> getPlayerId() {

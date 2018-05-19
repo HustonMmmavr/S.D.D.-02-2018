@@ -10,4 +10,7 @@ public class GameConfig {
     public static final  int MIN_BORDER = 0;
     // tacts - distance / velocity
     public static final int ONE_TIME_STEP = 1000 / (DISTANCE / DEFAULT_VELOCITY);
+    public static final int SCORED = 5;
+    public static final int BAD_AREA = 6;
+    public static final int DEFAULT_FIELD_VALUE = 0;
 }

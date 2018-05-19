@@ -31,12 +31,12 @@ public class ClientSnapshotService {
         final Collection<Player> players = new ArrayList<>();
         players.addAll(gameSession.getPlayers());
         for (Player player: players) {
-            final List<ClientSnapshot> playerSnaps = getSnapForUser(player.getUserId());
-            if (playerSnaps.isEmpty()) {
-                continue;
-            }
+            //final List<ClientSnapshot> playerSnaps = getSnapForUser(player.getUserId());
+            //if (playerSnaps.isEmpty()) {
+            //    continue;
+            //}
 
-            playerSnaps.stream().filter(ClientSnapshot::isChanged()).findFirst().ifPres
+           // playerSnaps.stream().filter(ClientSnapshot::isChanged()).findFirst().ifPres
          }
 //        players.add(gameSession.getFirst());
 //        players.add(gameSession.getSecond());
