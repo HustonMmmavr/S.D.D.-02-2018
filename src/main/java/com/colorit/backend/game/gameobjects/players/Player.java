@@ -44,7 +44,8 @@ public class Player extends GameObject {
 
 
     public Point move(double timeDelay, int minBorder, int maxBorder) {
-        offset += velocity;
+//        int newtimeDelay / ONE_STEP_TIME * velocity;
+        offset += timeDelay / ONE_TIME_STEP * velocity;
         final boolean isOnCell = offset / DISTANCE >= 1;
         if (isOnCell) {
             offset %= DISTANCE;
@@ -130,6 +131,7 @@ public class Player extends GameObject {
         private Integer score;
         private Integer id;
         private Integer velocity;
+        private Integer offset;
         private Direction newDirection;
 
 //        public PlayerSnap(Direction direction, Integer score, Integer id, Integer velocity, Direction newDirection) {
@@ -140,6 +142,15 @@ public class Player extends GameObject {
             this.id = (int) player.getPlayerId().getId();
             this.velocity = player.getVelocity();
             this.newDirection = player.getNewDirection();
+            this.offset = player.getOffset();
+        }
+
+        public Integer getOffset() {
+            return offset;
+        }
+
+        public void setOffset(Integer offset) {
+            this.offset = offset;
         }
 
         public Point getPosition() {

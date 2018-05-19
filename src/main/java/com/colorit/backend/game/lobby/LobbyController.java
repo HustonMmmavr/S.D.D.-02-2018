@@ -7,9 +7,12 @@ import com.colorit.backend.game.messages.output.LobbyError;
 import com.colorit.backend.game.messages.output.LobbyUsers;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.session.GameSession;
+import com.colorit.backend.services.IUserService;
+import com.colorit.backend.services.UserServiceJpa;
 import com.colorit.backend.websocket.RemotePointService;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
@@ -21,13 +24,18 @@ public class LobbyController {
     @NotNull
     private final RemotePointService remotePointService;
 
+    @NotNull
+    private final IUserService userService;
+
     private final HashMap<Id<Lobby>, Lobby> lobbiesMap = new HashMap<>();
     private final Set<Lobby> lobbies = new HashSet<>();
 
     public LobbyController(@NotNull GameSessionsController gameSessionsController,
-                           @NotNull RemotePointService remotePointService) {
+                           @NotNull RemotePointService remotePointService,
+                           @NotNull IUserService userService) {
         this.gameSessionsController = gameSessionsController;
         this.remotePointService = remotePointService;
+        this.userService = userService;
     }
 
     public void addUser(Id<Lobby> lId, Id<UserEntity> uId) {
@@ -40,8 +48,16 @@ public class LobbyController {
             }
             return;
         }
+//        try {
         gameSessionsController.addUser(uId, lobby.getAssociatedSession());
+        //remotePointService.sendMessageToUser(uId, new LobbyConnected());
     }
+
+    private boolean insureCandidate(@NotNull Id<UserEntity> candidate) {
+        return remotePointService.isConnected(candidate)
+                && userService.getUser(candidate.getAdditionalInfo()) != null;
+    }
+
 
     public void removeUser(Id<Lobby> lId, Id<UserEntity> uId) {
         final Lobby lobby = lobbiesMap.get(lId);
@@ -57,6 +73,7 @@ public class LobbyController {
         gameSessionsController.removeUser(uId, lobby.getAssociatedSession());
         if (lobby.getAssociatedSession().getUsers().isEmpty()) {
             gameSessionsController.deleteSession(lobby.getAssociatedSession());
+            lobbies.remove(lobby);
         }
     }
 

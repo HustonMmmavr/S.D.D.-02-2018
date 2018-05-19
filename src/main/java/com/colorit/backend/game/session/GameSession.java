@@ -41,9 +41,11 @@ public class GameSession {
         gameField = new GameField(fieldSize);
         sessionStatus = Status.CREATED;
         this.remotePointService = remotePointService;
-        this.gameTime = gameTime;
+        this.gameTime = gameTime * 1000; //milisseconds
     }
 
+
+    // no need enums its on level lobb
     public enum Status {
         CREATED,
         FILLED,
@@ -57,6 +59,18 @@ public class GameSession {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public void subTime(double time) {
+        gameTime -= time;
+        if (gameTime <= 0) {
+            sessionStatus = Status.FINISHED;
+        }
+    }
+
+
+    public boolean isFinised() {
+        return sessionStatus == Status.FINISHED;
     }
 
     public void setStatus(Status status) {
@@ -118,6 +132,13 @@ public class GameSession {
         );
     }
 
+    public boolean isFullParty() {
+        return users.size() == FULL_PARTY;
+    }
+}
+
+
+
 //    public void sendGameInfo() {
 //        List<Point> points = new ArrayList<>();
 //
@@ -131,8 +152,3 @@ public class GameSession {
 //            LOGGER.error("error send info");
 //        }
 //    }
-
-    public boolean isFullParty() {
-        return users.size() == FULL_PARTY;
-    }
-}

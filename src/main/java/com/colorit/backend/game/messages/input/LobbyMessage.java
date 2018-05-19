@@ -8,6 +8,7 @@ public class LobbyMessage extends Message {
     private LobbySettings settings;
     private Action action;
     private Long lobbyId;
+    private Long userId;
 
     public enum Action {
         @JsonProperty("CREATE")
@@ -23,6 +24,17 @@ public class LobbyMessage extends Message {
         //todo add new message to start
     }
 
+    public void setLobbyId(Long lobbyId) {
+        this.lobbyId = lobbyId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     @JsonProperty("settings")
     public LobbySettings getSettings() {
