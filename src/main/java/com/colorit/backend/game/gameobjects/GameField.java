@@ -1,9 +1,7 @@
 package com.colorit.backend.game.gameobjects;
 
 import com.colorit.backend.game.gameobjects.math.Point;
-import com.colorit.backend.game.gameobjects.players.Player;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,16 +96,15 @@ public class GameField extends GameObject {
         4.2. Не обработан ранее (т.е. его цвет отличается от цвета границы или цвета внутренней области);
         5. Если стек не пуст, перейти к шагу 2
         */
-        boolean isBadArea = false;
-        LinkedList<Point> curAreaPoints;
+//        boolean isBadArea = false;
 
         for (Point startPoint : checkArray) {
             if (!((matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == SCORED) ||
                     (matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == BAD_AREA))) {
-                isBadArea = false;
-                curAreaPoints = new LinkedList<>();
+                boolean isBadArea = false;
+                LinkedList<Point> curAreaPoints = new LinkedList<>();
                 stack.addLast(startPoint);
-                while (stack.size() > 0) {
+                while (!stack.isEmpty()) {
                     final Point curPoint = stack.pollLast();
                     matrixCopy.get(curPoint.getY()).set(curPoint.getX(), SCORED);
                     curAreaPoints.addLast(curPoint);
@@ -123,7 +120,7 @@ public class GameField extends GameObject {
                         for (int x = curPoint.getX() - 1; x <= curPoint.getX() + 1; x++) {
                             final Point pointToAdd = new Point(x, y);
                             if (isDotValidNoEdgeCheck(matrixCopy, pointToAdd, playerId)) {
-                                stack.push(pointToAdd);
+                                stack.addLast(pointToAdd);
                             }
                         }
                     }

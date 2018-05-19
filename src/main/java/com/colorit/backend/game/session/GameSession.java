@@ -132,7 +132,7 @@ public class GameSession {
                     player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
                     player.setAddScore(false);
                 } else {
-                    gameField.checkArea(player.getPosition(), (int)player.getPlayerId().getId());
+                    player.setAddScore(gameField.checkArea(player.getPosition(), (int)player.getPlayerId().getId()));
                 }
             }
         });
