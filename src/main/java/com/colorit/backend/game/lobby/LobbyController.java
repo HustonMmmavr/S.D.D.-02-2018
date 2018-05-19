@@ -2,9 +2,7 @@ package com.colorit.backend.game.lobby;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.messages.output.Lobbies;
-import com.colorit.backend.game.messages.output.LobbyError;
-import com.colorit.backend.game.messages.output.LobbyUsers;
+import com.colorit.backend.game.messages.output.*;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.services.IUserService;
@@ -48,6 +46,15 @@ public class LobbyController {
             }
             return;
         }
+
+        try {
+            for (Id<UserEntity> user : lobby.getUsers()) {
+                remotePointService.sendMessageToUser(user, new LobbyInfoMessage(lId.getId(), uId.getId(),
+                        LobbyInfoMessage.Action.CONNECTED));
+            }
+        } catch (IOException e) {
+
+        }
 //        try {
         gameSessionsController.addUser(uId, lobby.getAssociatedSession());
         //remotePointService.sendMessageToUser(uId, new LobbyConnected());
@@ -70,10 +77,20 @@ public class LobbyController {
             return;
         }
 
+        try {
+            for (Id<UserEntity> user : lobby.getUsers()) {
+                remotePointService.sendMessageToUser(user, new LobbyInfoMessage(lId.getId(), uId.getId(),
+                        LobbyInfoMessage.Action.DISCONNECTED));
+            }
+        } catch (IOException e) {
+
+        }
+
         gameSessionsController.removeUser(uId, lobby.getAssociatedSession());
         if (lobby.getAssociatedSession().getUsers().isEmpty()) {
             gameSessionsController.deleteSession(lobby.getAssociatedSession());
             lobbies.remove(lobby);
+            lobbiesMap.remove(lId);
         }
     }
 
@@ -94,11 +111,11 @@ public class LobbyController {
 
     public void getLobbies(Id<UserEntity> uId) {
         try {
-            final List<Lobbies.OneLobby> lobbiesList = new ArrayList<>();
+            final List<OneLobbyInfo> lobbiesList = new ArrayList<>();
             for (Id<Lobby> lId : lobbiesMap.keySet()) {
                 final Lobby lobby = lobbiesMap.get(lId);
                 if (lobby != null && lobby.isActive()) {
-                    lobbiesList.add(new Lobbies.OneLobby(lId.getId(), lId.getAdditionalInfo(),
+                    lobbiesList.add(new OneLobbyInfo(lId.getId(), lId.getAdditionalInfo(),
                             lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
                             lobby.getFiledSize(), lobby.getGameTime()));
                 }
@@ -120,6 +137,10 @@ public class LobbyController {
             final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
             lobbiesMap.put(lobby.getId(), lobby);
             lobbies.add(lobby);
+            remotePointService.sendMessageToUser(uId, new OneLobbyInfo(lobby.getId().getId(),
+                    lobby.getId().getAdditionalInfo(),
+                    lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
+                    lobby.getFiledSize(), lobby.getGameTime()));
         } catch (IOException ignore) {
         }
     }

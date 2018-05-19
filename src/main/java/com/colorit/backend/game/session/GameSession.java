@@ -32,6 +32,7 @@ public class GameSession {
     private RemotePointService remotePointService;
     private final GameSessionsController gameSessionsController;
     private long gameTime;
+    private long timePlaying;
 
     public GameSession(RemotePointService remotePointService, GameSessionsController gameSessionsController,
                        int fieldSize, long gameTime) {
@@ -41,6 +42,7 @@ public class GameSession {
         sessionStatus = Status.CREATED;
         this.remotePointService = remotePointService;
         this.gameTime = gameTime * 1000; //milisseconds
+        this.timePlaying = 0;
     }
 
 
@@ -52,6 +54,11 @@ public class GameSession {
         FINISHED
     }
 
+    public void resetSession() {
+        this.timePlaying = 0;
+
+    }
+
     public List<Id<UserEntity>> getUsers() {
         return users;
     }
@@ -61,14 +68,16 @@ public class GameSession {
     }
 
     public void subTime(double time) {
-        gameTime -= time;
-        if (gameTime <= 0) {
-            sessionStatus = Status.FINISHED;
-        }
+        this.timePlaying += time;
+//        gameTime -= time;
+//        if (gameTime <= 0) {
+//            sessionStatus = Status.FINISHED;
+//        }
     }
 
     public boolean isFinised() {
-        return sessionStatus == Status.FINISHED;
+        return gameTime < timePlaying;
+        //sessionStatus == Status.FINISHED;
     }
 
     public void setStatus(Status status) {
