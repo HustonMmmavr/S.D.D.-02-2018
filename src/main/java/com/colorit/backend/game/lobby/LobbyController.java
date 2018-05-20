@@ -25,7 +25,6 @@ public class LobbyController {
 
     private final HashMap<Id<Lobby>, Lobby> lobbiesMap = new HashMap<>();
     private final Set<Id<UserEntity>> freeUsers = new HashSet<>();
-//    private final HashMap<Id<Lobby>, Id<UserEntity>> lobbyUserMap = new HashMap<>();
     private final Set<Lobby> lobbies = new HashSet<>();
 
     public LobbyController(@NotNull GameSessionsController gameSessionsController,
@@ -37,6 +36,9 @@ public class LobbyController {
     }
 
     public void addUser(Id<Lobby> lId, Id<UserEntity> uId) {
+        if (checkUserInLobby(uId)) {
+            return;
+        }
         final Lobby lobby = lobbiesMap.get(lId);
         if (lId == null || lobbiesMap.get(lId) == null) {
             try {
@@ -47,23 +49,18 @@ public class LobbyController {
             return;
         }
 
+        // adds user to session and removes from freeusers
         freeUsers.remove(uId);
-        lobby.getUsers().add(uId);
+        gameSessionsController.addUser(uId, lobby.getAssociatedSession());
+        lobby.setState(Lobby.State.READY);
         try {
-            for (Id<UserEntity> user: lobby.getUsers()) {
+            for (Id<UserEntity> user : lobby.getUsers()) {
                 remotePointService.sendMessageToUser(user, new LobbyStateMessage(lId.getId(), uId.getId(),
                         LobbyStateMessage.Action.CONNECTED));
             }
         } catch (IOException e) {
 
         }
-        gameSessionsController.addUser(uId, lobby.getAssociatedSession());
-//        try {
-//            remotePointService.sendMessageToUser(uId, new LobbyStateMessage(lId.getId(), ));
-//
-//        } catch (IOException io) {
-//
-//        }
     }
 
     private boolean insureCandidate(@NotNull Id<UserEntity> candidate) {
@@ -99,12 +96,13 @@ public class LobbyController {
         if (!problemUsers.isEmpty()) {
             problemUsers.forEach(user -> lobby.getUsers().remove(user));
             try {
-                for (Id<UserEntity> user: lobby.getUsers()) {
+                for (Id<UserEntity> user : lobby.getUsers()) {
                     remotePointService.sendMessageToUser(user, new LobbyError("You cant start game, some users disconnetcted"));
                 }
             } catch (IOException ignore) {
             }
         } else {
+            lobby.setState(Lobby.State.GAME);
             lobby.getAssociatedSession().startSession();
         }
     }
@@ -122,9 +120,11 @@ public class LobbyController {
         }
 
         try {
-            for (Id<UserEntity> user : lobby.getUsers()) {
-                remotePointService.sendMessageToUser(user, new LobbyStateMessage(lId.getId(), uId.getId(),
-                        LobbyStateMessage.Action.DISCONNECTED));
+            if (lobby.getUsers().contains(uId)) {
+                for (Id<UserEntity> user : lobby.getUsers()) {
+                    remotePointService.sendMessageToUser(user, new LobbyStateMessage(lId.getId(), uId.getId(),
+                            LobbyStateMessage.Action.DISCONNECTED));
+                }
             }
         } catch (IOException e) {
 
@@ -172,19 +172,32 @@ public class LobbyController {
         }
     }
 
-    public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
+    public boolean checkUserInLobby(Id<UserEntity> uId) {
         try {
             if (gameSessionsController.getGameUserSessions().get(uId) != null) {
                 remotePointService.sendMessageToUser(uId, new LobbyError("You cant create while you already play"));
-                return;
+                return true;
             }
-            final GameSession gameSession = gameSessionsController.createSession(lobbySettings.getFieldSize(),
-                    lobbySettings.getGameTime());
-            gameSessionsController.addUser(uId, gameSession);
-            final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
-            lobbiesMap.put(lobby.getId(), lobby);
-            lobbies.add(lobby);
-            for (Id<UserEntity> user: freeUsers) {
+            return false;
+            // todo think
+        } catch (IOException ignore) {
+            return false;
+        }
+    }
+
+    public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
+        if (checkUserInLobby(uId)) {
+            return;
+        }
+
+        final GameSession gameSession = gameSessionsController.createSession(lobbySettings.getFieldSize(),
+                lobbySettings.getGameTime());
+        gameSessionsController.addUser(uId, gameSession);
+        final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
+        lobbiesMap.put(lobby.getId(), lobby);
+        lobbies.add(lobby);
+        try {
+            for (Id<UserEntity> user : freeUsers) {
                 remotePointService.sendMessageToUser(user, new OneLobbyInfo(lobby.getId().getId(),
                         lobby.getId().getAdditionalInfo(),
                         lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
@@ -196,6 +209,10 @@ public class LobbyController {
     }
 }
 
-//        lobbyUserMap.put(lId, uId);
+
 //        try {
-//            lobbyUserMap.put(lobby.getId(), uId);
+//            remotePointService.sendMessageToUser(uId, new LobbyStateMessage(lId.getId(), ));
+//
+//        } catch (IOException io) {
+//
+//        }

@@ -12,16 +12,13 @@ public class Lobby {
     private Id<UserEntity> ownerId;
     private final Id<Lobby> id;
     private final GameSession associatedSession;
-//    private final Integer fieldSize;\
-//    private final Integer gameTime;
-//    private final Boolean isMultiplayer;
     private State state;
 
     public enum State {
         WAITING,
-        FILLED,
-        STARTED,
-        EMPTY
+        READY,
+        GAME,
+        FINISHED
     }
 
     public Lobby(LobbySettings lobbySettings, Id<UserEntity> ownerId, GameSession gameSession) {
@@ -30,9 +27,14 @@ public class Lobby {
         this.ownerId = ownerId;
         id.setAdditionalInfo(lobbySettings.getName());
         this.associatedSession = gameSession;
-//        this.fieldSize = lobbySettings.getFieldSize();
-//        this.gameTime = lobbySettings.getGameTime();
-//        this.isMultiplayer = lobbySettings.getMultiplayer();
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     public int getFiledSize() {
@@ -68,8 +70,14 @@ public class Lobby {
     }
 
     public Boolean isActive() {
-        return state == State.WAITING || state == State.FILLED;
+        return state == State.WAITING || state == State.READY;
     }
 }
 
 
+//    private final Integer fieldSize;\
+//    private final Integer gameTime;
+//    private final Boolean isMultiplayer;
+//        this.fieldSize = lobbySettings.getFieldSize();
+//        this.gameTime = lobbySettings.getGameTime();
+//        this.isMultiplayer = lobbySettings.getMultiplayer();

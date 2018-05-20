@@ -28,23 +28,19 @@ public class GameSession {
     private HashMap<Id<UserEntity>, Player> playersMap = new HashMap<>();
     private Id<GameSession> id;
     private GameField gameField;
-    private Status sessionStatus;
-    private RemotePointService remotePointService;
     private final GameSessionsController gameSessionsController;
+    private Status sessionStatus;
     private long gameTime;
     private long timePlaying;
 
-    public GameSession(RemotePointService remotePointService, GameSessionsController gameSessionsController,
-                       int fieldSize, long gameTime) {
-        this.gameSessionsController = gameSessionsController;
+    public GameSession(GameSessionsController gameSessionsController,int fieldSize, long gameTime) {
         id = Id.of(ID_GENERATOR.getAndIncrement());
         gameField = new GameField(fieldSize);
         sessionStatus = Status.CREATED;
-        this.remotePointService = remotePointService;
         this.gameTime = gameTime * 1000; //milisseconds
         this.timePlaying = 0;
+        this.gameSessionsController = gameSessionsController;
     }
-
 
     // no need enums its on level lobb
     public enum Status {
@@ -69,10 +65,6 @@ public class GameSession {
 
     public void subTime(double time) {
         this.timePlaying += time;
-//        gameTime -= time;
-//        if (gameTime <= 0) {
-//            sessionStatus = Status.FINISHED;
-//        }
     }
 
     public boolean isFinised() {
@@ -151,3 +143,23 @@ public class GameSession {
         return users.size() == FULL_PARTY;
     }
 }
+
+//    public GameSession(RemotePointService remotePointService, GameSessionsController gameSessionsController,
+//                       int fieldSize, long gameTime) {
+//        this.gameSessionsController = gameSessionsController;
+//        id = Id.of(ID_GENERATOR.getAndIncrement());
+//        gameField = new GameField(fieldSize);
+//        sessionStatus = Status.CREATED;
+////        this.remotePointService = remotePointService;
+//        this.gameTime = gameTime * 1000; //milisseconds
+//        this.timePlaying = 0;
+//    }
+
+
+
+//        gameTime -= time;
+//        if (gameTime <= 0) {
+//            sessionStatus = Status.FINISHED;
+//        }
+//        }
+//private RemotePointService remotePointService;

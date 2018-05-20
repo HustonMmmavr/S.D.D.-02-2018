@@ -28,7 +28,7 @@ public class GameSessionsController {
 
     // connected to lobby
     public GameSession createSession(Integer fieldSize, long gameTime) {
-        final GameSession gameSession = new GameSession(remotePointService, this, fieldSize, gameTime);
+        final GameSession gameSession = new GameSession(this, fieldSize, gameTime);
         gamesSessions.add(gameSession);
         return gameSession;
     }
@@ -38,7 +38,9 @@ public class GameSessionsController {
         gamesSessions.remove(gameSession);
     }
 
-    public HashMap<Id<UserEntity>, GameSession> getGameUserSessions() {return gameUserSessions;}
+    public HashMap<Id<UserEntity>, GameSession> getGameUserSessions() {
+        return gameUserSessions;
+    }
 
     public Set<GameSession> getGameSessions() {
         return gamesSessions;
@@ -54,9 +56,9 @@ public class GameSessionsController {
     }
 
     public void addUser(Id<UserEntity> uId, GameSession gameSession) {
+        gameUserSessions.put(uId, gameSession);
+        gameSession.addUser(uId);
 
-            gameUserSessions.put(uId, gameSession);
-            gameSession.addUser(uId);
         if (gameSession.isFullParty()) {
             gameSession.startSession();
             gameSession.setStatus(GameSession.Status.FILLED);
@@ -71,14 +73,4 @@ public class GameSessionsController {
     }
 }
 
-//        try {
-// check that this user not playing already
-//            if (gameUserSessions.get(uId) != null) {
-//                remotePointService.sendMessageToUser(uId, new Connected("Error"));
-//                return;
-//            }
-
-//            remotePointService.sendMessageToUser( uId, new Connected("hi " + uId.getAdditionalInfo()));
-//        } catch (IOException ignore) {
-//
-//        }
+//        final GameSession gameSession = new GameSession(remotePointService, this, fieldSize, gameTime);
