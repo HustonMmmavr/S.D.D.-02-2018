@@ -28,46 +28,22 @@ public class ClientSnapshotService {
     }
 
     public void processSnapshotsFor(@NotNull GameSession gameSession) {
-        final Collection<Player> players = new ArrayList<>();
-        players.addAll(gameSession.getPlayers());
+        final Collection<Player> players = new ArrayList<>(gameSession.getPlayers());
         for (Player player: players) {
-            //final List<ClientSnapshot> playerSnaps = getSnapForUser(player.getUserId());
-            //if (playerSnaps.isEmpty()) {
-            //    continue;
-            //}
+            final List<ClientSnapshot> playerSnaps = getSnapForUser(player.getUserId());
+            if (playerSnaps.isEmpty()) {
+                continue;
+            }
 
-           // playerSnaps.stream().filter(ClientSnapshot::isChanged()).findFirst().ifPres
+            playerSnaps.stream().filter(ClientSnapshot::isChanged).findFirst().ifPresent(snap -> processDirectionChange(snap, gameSession, player));
          }
-//        players.add(gameSession.getFirst());
-//        players.add(gameSession.getSecond());
-//        for (GameUser player : players) {
-//            final List<ClientSnap> playerSnaps = getSnapForUser(player.getUserId());
-//            if (playerSnaps.isEmpty()) {
-//                continue;
-//            }
-//
-//            playerSnaps.stream().filter(ClientSnap::isFiring).findFirst().ifPresent(snap -> processClick(snap, gameSession, player));
-//
-//            final ClientSnap lastSnap = playerSnaps.get(playerSnaps.size() - 1);
-//            processMouseMove(player, lastSnap.getMouse());
-//        }
     }
 
     private void processDirectionChange(@NotNull ClientSnapshot snap, @NotNull GameSession gameSession,
                                    @NotNull Player player) {
-
+        // or send user here;
+        gameSession.changeDirection(player.getUserId(), snap.getDirection());
     }
-
-    //private void processClick(@NotNull ClientSnap snap, @NotNull GameSession gameSession, @NotNull GameUser gameUser) {
-        //final MechanicPart mechanicPart = gameUser.claimPart(MechanicPart.class);
-        //if (mechanicPart.tryFire()) {
-        //    gameSession.getBoard().fireAt(snap.getMouse());
-        //}
-    //}
-
-    //private void processMouseMove(@NotNull GameUser gameUser, @NotNull Coords mouse) {
-        //gameUser.claimPart(MousePart.class).setMouse(mouse);
-    //}
 
     public void clearForUser(Id<UserEntity> uId) {
         snaps.remove(uId);

@@ -50,6 +50,10 @@ public class GameSession {
         FINISHED
     }
 
+    public Id<GameSession> getId() {
+        return id;
+    }
+
     public void resetSession() {
         this.timePlaying = 0;
 
@@ -85,7 +89,7 @@ public class GameSession {
         for (Id<UserEntity> user: users) {
             final Point startPoint = new Point(playerId == 1 || playerId == 4  ?  0 : gameField.getRank() - 1 ,
                     playerId < 3 ? 0 : gameField.getRank() - 1);
-            final Player player = new Player(user.getAdditionalInfo(), Id.of(playerId), startPoint);
+            final Player player = new Player(user, Id.of(playerId), startPoint);
             playerId += 1;
             playersMap.put(user, player);
             players.add(player);
@@ -114,7 +118,7 @@ public class GameSession {
     }
 
     public void terminateSession() {
-        gameSessionsController.terminateSession(this, true);
+        gameSessionsController.forceTerminate(this, true);
     }
 
     public int getFieldSize() {
@@ -143,23 +147,3 @@ public class GameSession {
         return users.size() == FULL_PARTY;
     }
 }
-
-//    public GameSession(RemotePointService remotePointService, GameSessionsController gameSessionsController,
-//                       int fieldSize, long gameTime) {
-//        this.gameSessionsController = gameSessionsController;
-//        id = Id.of(ID_GENERATOR.getAndIncrement());
-//        gameField = new GameField(fieldSize);
-//        sessionStatus = Status.CREATED;
-////        this.remotePointService = remotePointService;
-//        this.gameTime = gameTime * 1000; //milisseconds
-//        this.timePlaying = 0;
-//    }
-
-
-
-//        gameTime -= time;
-//        if (gameTime <= 0) {
-//            sessionStatus = Status.FINISHED;
-//        }
-//        }
-//private RemotePointService remotePointService;

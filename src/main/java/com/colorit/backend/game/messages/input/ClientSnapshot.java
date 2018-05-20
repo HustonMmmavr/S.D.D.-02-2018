@@ -35,4 +35,8 @@ public class ClientSnapshot extends Message {
     public void setFrameTime(long frameTime) {
         this.frameTime = frameTime;
     }
+
+    public boolean isChanged() {
+        return direction != null;
+    }
 }

@@ -1,6 +1,7 @@
 package com.colorit.backend.game.gameobjects.players;
 
 import com.colorit.backend.entities.Id;
+import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.gameobjects.GameObject;
 import com.colorit.backend.game.gameobjects.Snap;
@@ -18,14 +19,16 @@ public class Player extends GameObject {
     protected Integer velocity = DEFAULT_VELOCITY;
     protected Id<Player> playerId;
     protected boolean addScore;
+    private Id<UserEntity> userId;
 
-    public Player(String nickname, Id<Player> playerId, Point startPoint) {
-        this.nickname = nickname;
+    public Player(Id<UserEntity> userId, Id<Player> playerId, Point startPoint) {
+        this.nickname = userId.getAdditionalInfo();
         this.score = 0;
         this.playerId = playerId;
         this.offset = 0;
         this.currentPosition = startPoint;
         this.addScore = false;
+        this.userId = userId;
 
         if (playerId.getId() == 1) {
             this.init(startPoint, Direction.RIGHT);
@@ -36,6 +39,10 @@ public class Player extends GameObject {
         } else {
             this.init(startPoint, Direction.UP);
         }
+    }
+
+    public Id<UserEntity> getUserId() {
+        return userId;
     }
 
 

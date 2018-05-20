@@ -67,10 +67,14 @@ public class GameMechanics implements IGameMechanics {
         gameSession.changeDirection(userId, clientSnap.getDirection());
     }
 
-    @Override
-    public void changeDirection(@NotNull Id<UserEntity> userId, @NotNull Direction direction) {
-//        gameSessionsController.getGameSessions().forEach();
-    }
+//    @Override
+//    public void changeDirection(@NotNull Id<UserEntity> userId, @NotNull Direction direction) {
+//        GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
+////        if (gameSession != null) {
+////            gameSession.changeDirection(userId, direction);
+//        }
+////        gameSessionsController.getGameSessions().forEach();
+//    }
 
     @Override
     public void gameStep(long frameTime) {

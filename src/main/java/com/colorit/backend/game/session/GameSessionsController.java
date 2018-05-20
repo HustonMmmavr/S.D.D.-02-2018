@@ -2,7 +2,9 @@ package com.colorit.backend.game.session;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
+import com.colorit.backend.game.messages.input.ClientSnapshot;
 import com.colorit.backend.game.messages.output.LobbyError;
+import com.colorit.backend.game.messages.services.ClientSnapshotService;
 import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +23,13 @@ public class GameSessionsController {
     private final Set<GameSession> gamesSessions = new LinkedHashSet<>();
 
     private HashMap<Id<UserEntity>, GameSession> gameUserSessions = new HashMap<>();
+    @NotNull
+    private final ClientSnapshotService clientSnapshotService;
 
-    public GameSessionsController(@NotNull RemotePointService remotePointService) {
+    public GameSessionsController(@NotNull RemotePointService remotePointService,
+                                  @NotNull ClientSnapshotService clientSnapshotService) {
         this.remotePointService = remotePointService;
+        this.clientSnapshotService = clientSnapshotService;
     }
 
     // connected to lobby
@@ -31,6 +37,29 @@ public class GameSessionsController {
         final GameSession gameSession = new GameSession(this, fieldSize, gameTime);
         gamesSessions.add(gameSession);
         return gameSession;
+    }
+
+    public void forceTerminate(@NotNull GameSession gameSession, boolean error) {
+        // todo delete associated lobby or only remove session
+        final boolean exists = gamesSessions.contains(gameSession);
+        gameSession.setFinished();
+        usersMap.remove(gameSession.getFirst().getUserId());
+        usersMap.remove(gameSession.getSecond().getUserId());
+        final CloseStatus status = error ? CloseStatus.SERVER_ERROR : CloseStatus.NORMAL;
+        if (exists) {
+            remotePointService.cutDownConnection(gameSession.getFirst().getUserId(), status);
+            remotePointService.cutDownConnection(gameSession.getSecond().getUserId(), status);
+        }
+        gameSession.getUsers().forEach(clientSnapshotService::clearForUser);//user -> clientSnapshotService.clearForUser(user));
+//                clientSnapshotsService.clearForUser(gameSession.getFirst().getUserId());
+//        clientSnapshotsService.clearForUser(gameSession.getSecond().getUserId());
+
+        LOGGER.info("Game session " + gameSession.getId() + (error ? " was terminated due to error. " : " was cleaned. ")
+                + gameSession.toString());
+    }
+
+    public boolean checkHealthState(@NotNull GameSession gameSession) {
+        return gameSession.getUsers().stream().allMatch(remotePointService::isConnected);
     }
 
     public void deleteSession(GameSession gameSession) {
@@ -51,10 +80,6 @@ public class GameSessionsController {
         gameSession.removeUser(uId);
     }
 
-    public void terminateSession(GameSession gameSession, boolean terminat) {
-
-    }
-
     public void addUser(Id<UserEntity> uId, GameSession gameSession) {
         gameUserSessions.put(uId, gameSession);
         gameSession.addUser(uId);
@@ -72,5 +97,3 @@ public class GameSessionsController {
         }
     }
 }
-
-//        final GameSession gameSession = new GameSession(remotePointService, this, fieldSize, gameTime);

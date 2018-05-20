@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public interface IGameMechanics {
     void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull ClientSnapshot clientSnap);
 
-    void changeDirection(@NotNull Id<UserEntity> userId, @NotNull Direction direction);
+//    void changeDirection(@NotNull Id<UserEntity> userId, @NotNull Direction direction);
 
     void gameStep(long frameTime);
 
