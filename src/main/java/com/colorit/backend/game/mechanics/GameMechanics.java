@@ -4,10 +4,11 @@ import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.GameTaskScheduler;
 import com.colorit.backend.game.MechanicsTimeService;
+import com.colorit.backend.game.lobby.Lobby;
+import com.colorit.backend.game.lobby.LobbyController;
 import com.colorit.backend.game.messages.services.ClientSnapshotService;
 import com.colorit.backend.game.messages.services.ServerSnapshotService;
 import com.colorit.backend.game.session.GameSessionsController;
-import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.messages.input.ClientSnapshot;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.websocket.RemotePointService;
@@ -38,6 +39,9 @@ public class GameMechanics implements IGameMechanics {
     private final ClientSnapshotService clientSnapshotService;
 
     @NotNull
+    private final LobbyController lobbyController;
+
+    @NotNull
     private final MechanicsTimeService mechanicsTimeService;
 
     @NotNull
@@ -51,13 +55,15 @@ public class GameMechanics implements IGameMechanics {
                          @NotNull ServerSnapshotService serverSnapshotService,
                          @NotNull ClientSnapshotService clientSnapshotService,
                          @NotNull MechanicsTimeService mechanicsTimeService,
-                         @NotNull GameTaskScheduler gameTaskScheduler) {
+                         @NotNull GameTaskScheduler gameTaskScheduler,
+                         @NotNull LobbyController lobbyController) {
         this.remotePointService = remotePointService;
         this.gameSessionsController = gameSessionsController;
         this.serverSnapshotService = serverSnapshotService;
         this.clientSnapshotService = clientSnapshotService;
         this.mechanicsTimeService = mechanicsTimeService;
         this.gameTaskScheduler = gameTaskScheduler;
+        this.lobbyController = lobbyController;
     }
 
     @Override
@@ -66,15 +72,6 @@ public class GameMechanics implements IGameMechanics {
         final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
         gameSession.changeDirection(userId, clientSnap.getDirection());
     }
-
-//    @Override
-//    public void changeDirection(@NotNull Id<UserEntity> userId, @NotNull Direction direction) {
-//        GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
-////        if (gameSession != null) {
-////            gameSession.changeDirection(userId, direction);
-//        }
-////        gameSessionsController.getGameSessions().forEach();
-//    }
 
     @Override
     public void gameStep(long frameTime) {
@@ -93,90 +90,84 @@ public class GameMechanics implements IGameMechanics {
             clientSnapshotService.processSnapshotsFor(session);
         }
 
+
         gameTaskScheduler.tick();
+
 
         final List<GameSession> sessionsToTerminate = new ArrayList<>();
         final List<GameSession> sessionsToFinish = new ArrayList<>();
-        for (GameSession session : gameSessionsController.getGameSessions()) {
-
+        for (Lobby lobby : lobbyController.getLobbies()) {
+            GameSession gameSession = lobby.getAssociatedSession();
             try {
-                if (session.isFullParty()) {
-                    session.movePlayers(frameTime);
-                    session.subTime(frameTime);
-                    serverSnapshotService.sendSnapshotsFor(session, frameTime);
+                // todo plying
+                if (gameSession.isPlaying()) {
+                    gameSession.movePlayers(frameTime);
+                    gameSession.subTime(frameTime);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
                     Thread.sleep(1000);
                 }
-            } catch (Exception e) {
+            }  catch (Exception e) {
 
             }
             // session needs to knew how mony time its playing
             // gamefield genrate bonus
             // todo add task that removes this effect or player stores itself its time
 
-            if (session.isFinised()) {
-                sessionsToFinish.add(session);
+            if (gameSession.isFinised()) {
+                sessionsToFinish.add(gameSession);
             }
-            //          if (session.tryFinishGame()) {
-            //              sessionsToFinish.add(session);
-            //            continue;
-            //      }
 
-            //    if (!gameSessionsController.checkHealthState(session)) {
-            //      sessionsToTerminate.add(session);
-            //    continue;
-            //}
 
+            // todo returs array of dea users and deletes them from session
+//            ArrayList
+            List<Id<UserEntity>> deadUsers = gameSessionsController.checkHealthState(gameSession);
+            if (!deadUsers.isEmpty()) {
+                deadUsers.forEach(user -> lobbyController.removeUser(lobby.getId(), user));
+            }
+
+            // todo get al
             try {
-                //serverSnapshotService.sendSnapshotsFor(session, frameTime);
+                if (gameSession.isPlaying()) {
+                    gameSession.movePlayers(frameTime);
+                    gameSession.subTime(frameTime);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
+                }
             } catch (RuntimeException ex) {
                 LOGGER.error("Failed to send snapshots, terminating the session", ex);
-                sessionsToTerminate.add(session);
+                sessionsToTerminate.add(gameSession);
             }
-            //pullTheTriggerService.pullTheTriggers(session);
         }
-        //sessionsToTerminate.forEach(session -> gameSessionsController.forceTerminate(session, true));
-//        sessionsToFinish.forEach(session -> gameSessionsController.forceTerminate(session, false));
 
-//        tryStartGames();
+//        sessionsToTerminate.forEach(session -> gameSessionsController.forceTerminate(session, true));
+        sessionsToFinish.forEach(GameSession::initMultiplayerSession);//gameSessionsController.(session, false));
+
         clientSnapshotService.reset();
-//        timeService.tick(frameTime);
+        mechanicsTimeService.tick(frameTime);
     }
 
     @Override
     public void reset() {
-//        for (GameSession session : gameSessionsController.getGameSessions()) {
-//            gameSessionsController.forceTerminate(session, true);
-//        }
+        for (GameSession session : gameSessionsController.getGameSessions()) {
+            gameSessionsController.forceTerminate(session, true);
+        }
+        // delete all users and lobbies
+//        gameSessionsController.ge
 //        waiters.forEach(user -> remotePointService.cutDownConnection(user, CloseStatus.SERVER_ERROR));
 //        waiters.clear();
-//        tasks.clear();
-//        clientSnapshotsService.reset();
-//        timeService.reset();
-//        gameTaskScheduler.reset();
+        tasks.clear();
+        clientSnapshotService.reset();
+        mechanicsTimeService.reset();
+        gameTaskScheduler.reset();
     }
 }
 
+//        tryStartGames();
 
-// Its for test TODO delete slee
-// todo interpolate offset
-//    @Override
-//    public void gameStep(long frameTime) {
-//        try {
-//            mechanicsTimeService.tick(frameTime);
-//            System.out.println(frameTime);
-//            for (GameSession gameSession : gameSessionsController.getGameSessions()) {
-//                if (gameSession.isFullParty()) {
-//                    gameSession.movePlayers(frameTime);
-//                    gameSession.subTime(frameTime);
-//                    serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
-////                    Thread.sleep(1000);
-//                }
-//
-//                if (gameSession.isFinised()) {
-//
-//                }
+
+//pullTheTriggerService.pullTheTriggers(session);
+
+
+//            if (!gameSessionsController.checkHealthState(gameSession)) {
+//                sessionsToTerminate.add(gameSession);
+//                continue;
 //            }
-//        } catch (Exception i) {
-//
-//        }
-//    }

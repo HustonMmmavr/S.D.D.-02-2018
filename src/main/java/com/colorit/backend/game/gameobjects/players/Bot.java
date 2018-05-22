@@ -1,11 +1,12 @@
 package com.colorit.backend.game.gameobjects.players;
 
 import com.colorit.backend.entities.Id;
+import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.gameobjects.math.Point;
 
 public class Bot extends Player {
-    public Bot(String nickname, Id<Player> id,  Point startPosition) {
-        super(nickname, id, startPosition);
+    public Bot(Id<UserEntity> uId, Id<Player> id,  Point startPosition) {
+        super(uId, id, startPosition);
     }
 
     @Override

@@ -7,9 +7,7 @@ import com.colorit.backend.game.gameobjects.GameField;
 import com.colorit.backend.game.gameobjects.bonus.Bonus;
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.game.gameobjects.players.Player;
-import com.colorit.backend.websocket.RemotePointService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.colorit.backend.game.lobby.Lobby;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,10 +17,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import static com.colorit.backend.game.GameConfig.MIN_BORDER;
 
 public class GameSession {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GameSession.class);
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private static final int FULL_PARTY = 2;
-
+    private static final int FULL_PARTY = 2;//4
     private List<Id<UserEntity>> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private HashMap<Id<UserEntity>, Player> playersMap = new HashMap<>();
@@ -36,18 +32,47 @@ public class GameSession {
     public GameSession(GameSessionsController gameSessionsController,int fieldSize, long gameTime) {
         id = Id.of(ID_GENERATOR.getAndIncrement());
         gameField = new GameField(fieldSize);
-        sessionStatus = Status.CREATED;
+        sessionStatus = Status.WAITING;
         this.gameTime = gameTime * 1000; //milisseconds
         this.timePlaying = 0;
         this.gameSessionsController = gameSessionsController;
     }
 
-    // no need enums its on level lobb
     public enum Status {
-        CREATED,
-        FILLED,
+        WAITING,
+        READY,
         PLAYING,
         FINISHED
+    }
+
+    public void setWaiting() {
+        this.sessionStatus = Status.WAITING;
+    }
+
+    public boolean isWaiting() {
+        return this.sessionStatus == Status.WAITING;//== St
+    }
+
+    public void setReady() {
+        this.sessionStatus = Status.READY;
+    }
+
+    public boolean isReady() {
+        return this.sessionStatus == Status.READY;
+    }
+
+    public void setFinished() {
+        this.sessionStatus = Status.FINISHED;
+    }
+
+    public boolean isFinished() {return this.sessionStatus == Status.FINISHED; }
+
+    public void setPlaying() {
+        this.sessionStatus = Status.PLAYING;
+    }
+
+    public boolean isPlaying() {
+        return this.sessionStatus == Status.PLAYING;
     }
 
     public Id<GameSession> getId() {
@@ -56,7 +81,7 @@ public class GameSession {
 
     public void resetSession() {
         this.timePlaying = 0;
-
+        this.sessionStatus = Status.WAITING;
     }
 
     public List<Id<UserEntity>> getUsers() {
@@ -76,23 +101,27 @@ public class GameSession {
         //sessionStatus == Status.FINISHED;
     }
 
-    public void setStatus(Status status) {
-        sessionStatus = status;
-    }
-
     public void addUser(Id<UserEntity> userId) {
         users.add(userId);
     }
 
-    public void startSession() {
+    //todo
+    public void initSingleplayerSession() {
+
+    }
+
+    public void initMultiplayerSession() {
+        playersMap.clear();
+        players.clear();
         long playerId = 1;
         for (Id<UserEntity> user: users) {
             final Point startPoint = new Point(playerId == 1 || playerId == 4  ?  0 : gameField.getRank() - 1 ,
                     playerId < 3 ? 0 : gameField.getRank() - 1);
             final Player player = new Player(user, Id.of(playerId), startPoint);
-            playerId += 1;
+            gameField.markCell(startPoint, playerId);
             playersMap.put(user, player);
             players.add(player);
+            playerId += 1;
         }
     }
 
@@ -104,7 +133,6 @@ public class GameSession {
         return gameField;
     }
 
-
     public void removeUser(Id<UserEntity> uId) {
         users.remove(uId);
         final Player player = playersMap.get(uId);
@@ -115,10 +143,6 @@ public class GameSession {
     public void changeDirection(Id<UserEntity> uId, Direction direction) {
         final Player player = playersMap.get(uId);
         player.setDirection(direction);
-    }
-
-    public void terminateSession() {
-        gameSessionsController.forceTerminate(this, true);
     }
 
     public int getFieldSize() {
@@ -141,6 +165,10 @@ public class GameSession {
                 }
             }
         });
+    }
+
+    public void terminateSession() {
+        gameSessionsController.forceTerminate(this, true);
     }
 
     public boolean isFullParty() {

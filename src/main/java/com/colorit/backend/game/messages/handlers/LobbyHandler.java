@@ -45,6 +45,8 @@ public class LobbyHandler extends MessageHandler<LobbyMessage> {
             case DISCONNECT:
                 lobbyController.removeUser(Id.of(message.getLobbyId()), forUser);
                 break;
+            case START:
+                lobbyController.startLobby(forUser, Id.of(message.getLobbyId()));
             case USERS:
                 lobbyController.getLobbyUsers(Id.of(message.getLobbyId()), forUser);
             default:

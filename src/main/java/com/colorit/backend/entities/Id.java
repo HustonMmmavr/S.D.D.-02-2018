@@ -34,9 +34,6 @@ public class Id<T> {
         }
         final Id<?> id1 = (Id<?>) subj;
 
-//        if (this.additionalInfo != null) {
-//            return this.additionalInfo.equals(id1.additionalInfo);
-//        }
         return this.id.equals(id1.id);
     }
 

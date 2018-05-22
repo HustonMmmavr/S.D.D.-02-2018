@@ -33,9 +33,19 @@ public class Lobby {
         return state;
     }
 
+    public void setReady() {
+        associatedSession.setReady();
+    }
+
     public void setState(State state) {
         this.state = state;
     }
+
+    public void setWaiting() {
+        this.associatedSession.setWaiting();
+    }
+
+
 
     public int getFiledSize() {
         return associatedSession.getFieldSize();

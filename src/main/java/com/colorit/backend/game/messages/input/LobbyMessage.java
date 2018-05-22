@@ -21,6 +21,8 @@ public class LobbyMessage extends Message {
         CHAT,
         @JsonProperty("USERS")
         USERS,
+        @JsonProperty("START")
+        START
         //todo add new message to start
     }
 

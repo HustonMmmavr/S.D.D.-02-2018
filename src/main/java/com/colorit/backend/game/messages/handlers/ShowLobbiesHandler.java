@@ -32,6 +32,6 @@ public class ShowLobbiesHandler extends MessageHandler<ShowLobbies.Request> {
 
     @Override
     public void handle(@NotNull ShowLobbies.Request message, @NotNull Id<UserEntity> forUser) {
-        lobbyController.getLobbies(forUser);
+        lobbyController.showLobbies(forUser);
     }
 }
