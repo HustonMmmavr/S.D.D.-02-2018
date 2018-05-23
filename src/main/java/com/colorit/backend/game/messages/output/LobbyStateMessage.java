@@ -6,10 +6,13 @@ public class LobbyStateMessage extends Message {
     private Long lobbyId;
     private Long userId;
     private Action action;
+    private OneLobbyInfo info;
     public enum Action {
         CONNECTED,
         DISCONNECTED
     }
+
+
 
     public LobbyStateMessage(Long lobbyId, Long userId, Action action) {
         this.lobbyId = lobbyId;

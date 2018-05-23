@@ -96,48 +96,54 @@ public class GameMechanics implements IGameMechanics {
 
         final List<GameSession> sessionsToTerminate = new ArrayList<>();
         final List<GameSession> sessionsToFinish = new ArrayList<>();
+        final List<Lobby> deadLobbies = new ArrayList<>();
         for (Lobby lobby : lobbyController.getLobbies()) {
-            GameSession gameSession = lobby.getAssociatedSession();
-            try {
-                // todo plying
-                if (gameSession.isPlaying()) {
-                    gameSession.movePlayers(frameTime);
-                    gameSession.subTime(frameTime);
-                    serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
-                    Thread.sleep(1000);
+            if (lobbyController.checkLobbyAlive(lobby)) {
+                GameSession gameSession = lobby.getAssociatedSession();
+                try {
+                    // todo plying
+                    if (gameSession.isPlaying()) {
+                        gameSession.movePlayers(frameTime);
+                        gameSession.subTime(frameTime);
+                        serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
+                        Thread.sleep(1000);
+                    }
+                } catch (Exception e) {
+
                 }
-            }  catch (Exception e) {
+                // session needs to knew how mony time its playing
+                // gamefield genrate bonus
+                // todo add task that removes this effect or player stores itself its time
 
-            }
-            // session needs to knew how mony time its playing
-            // gamefield genrate bonus
-            // todo add task that removes this effect or player stores itself its time
-
-            if (gameSession.isFinised()) {
-                sessionsToFinish.add(gameSession);
-            }
+                if (gameSession.isFinised()) {
+                    sessionsToFinish.add(gameSession);
+                }
 
 
-            // todo returs array of dea users and deletes them from session
+                // todo returs array of dea users and deletes them from session
 //            ArrayList
-            List<Id<UserEntity>> deadUsers = gameSessionsController.checkHealthState(gameSession);
-            if (!deadUsers.isEmpty()) {
-                deadUsers.forEach(user -> lobbyController.removeUser(lobby.getId(), user));
-            }
-
-            // todo get al
-            try {
-                if (gameSession.isPlaying()) {
-                    gameSession.movePlayers(frameTime);
-                    gameSession.subTime(frameTime);
-                    serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
+                List<Id<UserEntity>> deadUsers = gameSessionsController.checkHealthState(gameSession);
+                if (!deadUsers.isEmpty()) {
+                    deadUsers.forEach(user -> lobbyController.removeUser(lobby.getId(), user));
                 }
-            } catch (RuntimeException ex) {
-                LOGGER.error("Failed to send snapshots, terminating the session", ex);
-                sessionsToTerminate.add(gameSession);
+
+                // todo get al
+                try {
+                    if (gameSession.isPlaying()) {
+                        gameSession.movePlayers(frameTime);
+                        gameSession.subTime(frameTime);
+                        serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
+                    }
+                } catch (RuntimeException ex) {
+                    LOGGER.error("Failed to send snapshots, terminating the session", ex);
+                    sessionsToTerminate.add(gameSession);
+                }
+            } else {
+                deadLobbies.add(lobby);
             }
         }
 
+       // deadLobbies.forEach();
 //        sessionsToTerminate.forEach(session -> gameSessionsController.forceTerminate(session, true));
         sessionsToFinish.forEach(GameSession::initMultiplayerSession);//gameSessionsController.(session, false));
 
