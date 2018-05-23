@@ -52,7 +52,7 @@ public class Lobby {
     }
 
     public long getGameTime() {
-        return associatedSession.getGameTime();
+        return associatedSession.getGameTime() / 1000;
     }
 
     public Id<UserEntity> getOwnerId() {
