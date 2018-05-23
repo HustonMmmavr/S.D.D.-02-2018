@@ -1,23 +1,30 @@
 package com.colorit.backend.game.messages.output;
 
+import com.colorit.backend.entities.Id;
+import com.colorit.backend.entities.db.UserEntity;
+import com.colorit.backend.game.lobby.Lobby;
 import com.colorit.backend.websocket.Message;
 //statee
 public class LobbyStateMessage extends Message {
     private Long lobbyId;
+    private String nickname;
     private Long userId;
     private Action action;
     private OneLobbyInfo info;
+
     public enum Action {
         CONNECTED,
-        DISCONNECTED
+        DISCONNECTED,
+        READY
     }
 
 
 
-    public LobbyStateMessage(Long lobbyId, Long userId, Action action) {
-        this.lobbyId = lobbyId;
-        this.userId = userId;
+    public LobbyStateMessage(Id<Lobby> lobbyId, Id<UserEntity> userId, Action action) {
+        this.lobbyId = lobbyId.getId();
+        this.userId = userId.getId();
         this.action = action;
+        this.nickname = userId.getAdditionalInfo();
     }
 
     public Long getLobbyId() {
@@ -30,6 +37,10 @@ public class LobbyStateMessage extends Message {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 
     public void setUserId(Long userId) {
