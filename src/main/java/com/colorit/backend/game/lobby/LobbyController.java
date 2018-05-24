@@ -153,15 +153,20 @@ public class LobbyController {
             }
             remotePointService.sendMessageToUser(uId, new LobbyConnected(lobby.getUsers(), lobby.getId(),
                     lobby.getOwnerId().getAdditionalInfo(), lobby.getFiledSize(), lobby.getGameTime()));
-            if (lobby.getAssociatedSession().isFullParty()) {
-                remotePointService.sendMessageToUser(lobby.getOwnerId(), new LobbyStateMessage(lobby.getId(), null,
-                        LobbyStateMessage.Action.READY));
-            }
+
         } catch (IOException e) {
 
         }
         freeUsers.remove(uId);
         gameSessionsController.addUser(uId, lobby.getAssociatedSession());
+        try {
+            if (lobby.getAssociatedSession().isFullParty()) {
+                remotePointService.sendMessageToUser(lobby.getOwnerId(), new LobbyStateMessage(lobby.getId(), null,
+                        LobbyStateMessage.Action.READY));
+            }
+        } catch (IOException ignore) {
+
+        }
     }
 
     private boolean insureCandidate(@NotNull Id<UserEntity> candidate) {

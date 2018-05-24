@@ -22,9 +22,11 @@ public class LobbyStateMessage extends Message {
 
     public LobbyStateMessage(Id<Lobby> lobbyId, Id<UserEntity> userId, Action action) {
         this.lobbyId = lobbyId.getId();
-        this.userId = userId.getId();
+        if (userId != null) {
+            this.userId = userId.getId();
+            this.nickname = userId.getAdditionalInfo();
+        }
         this.action = action;
-        this.nickname = userId.getAdditionalInfo();
     }
 
     public Long getLobbyId() {
