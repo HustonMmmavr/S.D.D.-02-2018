@@ -29,6 +29,7 @@ public class Player extends GameObject {
         this.currentPosition = startPoint;
         this.addScore = false;
         this.userId = userId;
+        playerId.setAdditionalInfo(userId.getAdditionalInfo());
 
         if (playerId.getId() == 1) {
             this.init(startPoint, Direction.RIGHT);

@@ -67,6 +67,13 @@ public class Lobby {
         return associatedSession;
     }
 
+    public boolean isAlive() {
+//        if (associatedSession.getUsers().isEmpty()) {
+//            return false;
+//        }
+        return !associatedSession.getUsers().isEmpty();
+     }
+
     public List<Id<UserEntity>> getUsers() {
         return associatedSession.getUsers();
     }

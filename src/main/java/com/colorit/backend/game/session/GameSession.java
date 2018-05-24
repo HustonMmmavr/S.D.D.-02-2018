@@ -110,6 +110,12 @@ public class GameSession {
 
     }
 
+    public List<Id<Player>> getPlayerIds() {
+        List<Id<Player>> playerIds = new ArrayList<>();
+        players.forEach(player -> playerIds.add(player.getPlayerId()));
+        return playerIds;
+    }
+
     public void initMultiplayerSession() {
         playersMap.clear();
         players.clear();

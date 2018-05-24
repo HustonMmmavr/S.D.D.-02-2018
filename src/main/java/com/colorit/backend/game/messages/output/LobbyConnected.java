@@ -9,32 +9,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LobbyConnected extends Message {
-    private String owner;
+    private Id<UserEntity> owner;
+    private List<Id<UserEntity>> users;
     private long id;
     private String name;
     private int fieldSize;
     private long gameTime;
-    private List<String> users;
 
-    public LobbyConnected(List<Id<UserEntity>> users, Id<Lobby> lobbyId, String owner, int fieldSize, long gameTime) {
+    public LobbyConnected(List<Id<UserEntity>> users, Id<Lobby> lobbyId, Id<UserEntity> owner, int fieldSize, long gameTime) {
         this.users = new ArrayList<>();
         this.name = lobbyId.getAdditionalInfo();
         this.owner = owner;
         this.id = lobbyId.getId();
         this.fieldSize = fieldSize;
-        users.forEach(user -> this.users.add(user.getAdditionalInfo()));
+        this.users.addAll(users);//forEach(user -> this.users.add(user));
         this.gameTime = gameTime;
     }
 
-    public List<String> getUsers() {
+    public List<Id<UserEntity>> getUsers() {
         return users;
     }
 
-    public String getOwner() {
+    public Id<UserEntity> getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(Id<UserEntity> owner) {
         this.owner = owner;
     }
 

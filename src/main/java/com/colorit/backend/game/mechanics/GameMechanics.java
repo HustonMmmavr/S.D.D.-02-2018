@@ -68,7 +68,7 @@ public class GameMechanics implements IGameMechanics {
 
     @Override
     public void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull ClientSnapshot clientSnap) {
-//        tasks.add(() -> clientSnapshotService.pushClientSnap(userId, clientSnap));
+        //tasks.add(() -> clientSnapshotService.pushClientSnap(userId, clientSnap));
         final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
         gameSession.changeDirection(userId, clientSnap.getDirection());
     }
@@ -98,34 +98,18 @@ public class GameMechanics implements IGameMechanics {
         final List<GameSession> sessionsToFinish = new ArrayList<>();
         final List<Lobby> deadLobbies = new ArrayList<>();
         for (Lobby lobby : lobbyController.getLobbies()) {
-            if (lobbyController.checkLobbyAlive(lobby)) {
+            if (lobbyController.isLobbyAlive(lobby)) {
                 GameSession gameSession = lobby.getAssociatedSession();
-                try {
-                    // todo plying
-                    if (gameSession.isPlaying()) {
-                        gameSession.movePlayers(frameTime);
-                        gameSession.subTime(frameTime);
-                        serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
-                        Thread.sleep(1000);
-                    }
-                } catch (Exception e) {
-
-                }
-                // session needs to knew how mony time its playing
-                // gamefield genrate bonus
-                // todo add task that removes this effect or player stores itself its time
-
                 if (gameSession.isFinised()) {
                     sessionsToFinish.add(gameSession);
                 }
 
 
                 // todo returs array of dea users and deletes them from session
-//            ArrayList
-                List<Id<UserEntity>> deadUsers = gameSessionsController.checkHealthState(gameSession);
-                if (!deadUsers.isEmpty()) {
-                    deadUsers.forEach(user -> lobbyController.removeUser(lobby.getId(), user));
-                }
+                //  List<Id<UserEntity>> deadUsers = gameSessionsController.checkHealthState(gameSession);
+                //  if (!deadUsers.isEmpty()) {
+                //      deadUsers.forEach(user -> lobbyController.removeUser(lobby.getId(), user));
+                //  }
 
                 // todo get al
                 try {
@@ -143,8 +127,7 @@ public class GameMechanics implements IGameMechanics {
             }
         }
 
-       // deadLobbies.forEach();
-//        sessionsToTerminate.forEach(session -> gameSessionsController.forceTerminate(session, true));
+        deadLobbies.forEach(lobbyController::removeLobby);
         sessionsToFinish.forEach(GameSession::initMultiplayerSession);//gameSessionsController.(session, false));
 
         clientSnapshotService.reset();
@@ -156,24 +139,9 @@ public class GameMechanics implements IGameMechanics {
         for (GameSession session : gameSessionsController.getGameSessions()) {
             gameSessionsController.forceTerminate(session, true);
         }
-        // delete all users and lobbies
-//        gameSessionsController.ge
-//        waiters.forEach(user -> remotePointService.cutDownConnection(user, CloseStatus.SERVER_ERROR));
-//        waiters.clear();
         tasks.clear();
         clientSnapshotService.reset();
         mechanicsTimeService.reset();
         gameTaskScheduler.reset();
     }
 }
-
-//        tryStartGames();
-
-
-//pullTheTriggerService.pullTheTriggers(session);
-
-
-//            if (!gameSessionsController.checkHealthState(gameSession)) {
-//                sessionsToTerminate.add(gameSession);
-//                continue;
-//            }
