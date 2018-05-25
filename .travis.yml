@@ -1,6 +1,6 @@
 #desc
 language: java
-jdk: oraclejdk9
+jdk: oraclejdk10
 install: true
 
 env: DB=pgsql

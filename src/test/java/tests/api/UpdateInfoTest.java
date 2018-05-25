@@ -121,7 +121,7 @@ class UpdateInfoTest {
                 post(PATH_URL_API + "update_nickname")
                         .contentType("application/json")
                         .content(builderUpdateNick.getJsonRequest(faker.name().username()))
-                        .sessionAttr("nickname", "aaa")
+                        .sessionAttr("nickname", "aaaaaaaaa")
                         .locale(Locale.US))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errors.general").value("Forbidden, please authorize!"));
