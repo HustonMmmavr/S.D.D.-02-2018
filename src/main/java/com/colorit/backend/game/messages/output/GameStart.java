@@ -6,6 +6,9 @@ import com.colorit.backend.websocket.Message;
 
 import java.util.List;
 
+
+// возможно timestamo
+// sample 3.1 пример для бонуса
 public class GameStart extends Message {
     private List<Id<Player>> players;
 

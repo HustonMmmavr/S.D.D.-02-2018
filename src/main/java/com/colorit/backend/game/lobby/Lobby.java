@@ -86,6 +86,10 @@ public class Lobby {
         return true;
     }
 
+    public boolean isFinished() {
+        return associatedSession.isFinised();
+    }
+
     public Boolean isActive() {
         return state == State.WAITING || state == State.READY;
     }

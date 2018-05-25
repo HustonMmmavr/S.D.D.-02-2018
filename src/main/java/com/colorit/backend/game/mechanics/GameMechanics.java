@@ -93,12 +93,12 @@ public class GameMechanics implements IGameMechanics {
 
         gameTaskScheduler.tick();
 
-
+        // скорость если хотим ускорение
         final List<GameSession> sessionsToTerminate = new ArrayList<>();
         final List<GameSession> sessionsToFinish = new ArrayList<>();
         final List<Lobby> deadLobbies = new ArrayList<>();
         for (Lobby lobby : lobbyController.getLobbies()) {
-            if (lobbyController.isLobbyAlive(lobby)) {
+            if (lobbyController.isLobbyAlive(lobby) && !lobby.isFinished()) {
                 GameSession gameSession = lobby.getAssociatedSession();
                 if (gameSession.isFinised()) {
                     sessionsToFinish.add(gameSession);

@@ -21,6 +21,14 @@ public class Player extends GameObject {
     protected boolean addScore;
     private Id<UserEntity> userId;
 
+
+    // передвигать по клиентскому фрейм тайму тику
+    // интерполяцию на клиенте
+    // каждый фрейм с клиента посылать
+    // два фрейма с сервера
+    // елсли произошли проблемы с браузером то применить последний снепшот
+    // либо последний либо предпоследий
+    //
     public Player(Id<UserEntity> userId, Id<Player> playerId, Point startPoint) {
         this.nickname = userId.getAdditionalInfo();
         this.score = 0;
@@ -62,6 +70,7 @@ public class Player extends GameObject {
     }
 
 
+    // ставить таску на бонус
     public boolean move(double timeDelay, int minBorder, int maxBorder) {
 //        int newtimeDelay / ONE_STEP_TIME * velocity;
         offset += timeDelay / ONE_TIME_STEP * velocity;
