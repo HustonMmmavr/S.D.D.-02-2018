@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum Direction {
     @JsonProperty("UP")
-    UP (1),
+    UP(1),
     @JsonProperty("DOWN")
-    DOWN (2),
+    DOWN(2),
     @JsonProperty("LEFT")
-    LEFT (3),
+    LEFT(3),
     @JsonProperty("RIGHT")
-    RIGHT (4);
+    RIGHT(4);
 
     private Integer id;
 

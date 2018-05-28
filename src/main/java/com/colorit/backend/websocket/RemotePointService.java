@@ -30,14 +30,6 @@ public class RemotePointService {
         return sessions.containsKey(uId) && sessions.get(uId).isOpen();
     }
 
-    public void startGame() {
-
-    }
-
-    public void finishGame() {
-
-    }
-
     public void removeUser(@NotNull Id<UserEntity> uId) {
         sessions.remove(uId);
     }

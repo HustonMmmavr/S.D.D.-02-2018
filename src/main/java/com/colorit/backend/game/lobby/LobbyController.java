@@ -2,13 +2,12 @@ package com.colorit.backend.game.lobby;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
+import com.colorit.backend.game.messages.handlers.LobbyOutMessageHandler;
 import com.colorit.backend.game.messages.output.*;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.services.IUserService;
-import com.colorit.backend.websocket.Message;
 import com.colorit.backend.websocket.RemotePointService;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,8 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.*;
 
+import static com.colorit.backend.game.GameConfig.FULL_PARTY;
 
-// todo if user delete from lobby and in game session add bot
 @Service
 public class LobbyController {
     private static final Logger LOGGER = LoggerFactory.getLogger(LobbyController.class);
@@ -28,6 +27,8 @@ public class LobbyController {
     private final RemotePointService remotePointService;
     @NotNull
     private final IUserService userService;
+    @NotNull
+    private final LobbyOutMessageHandler lobbyOutMessageHandler;
 
     private final HashMap<Id<Lobby>, Lobby> lobbiesMap = new HashMap<>();
     private final Set<Id<UserEntity>> freeUsers = new HashSet<>();
@@ -35,296 +36,42 @@ public class LobbyController {
 
     public LobbyController(@NotNull GameSessionsController gameSessionsController,
                            @NotNull RemotePointService remotePointService,
-                           @NotNull IUserService userService) {
+                           @NotNull IUserService userService,
+                           @NotNull LobbyOutMessageHandler lobbyOutMessageHandler) {
         this.gameSessionsController = gameSessionsController;
         this.remotePointService = remotePointService;
         this.userService = userService;
-    }
-
-    public void removeLobby(Lobby lobby) {
-        LOGGER.info("lobby deleted " + lobby.getId() + " owner " + lobby.getOwnerId().getAdditionalInfo() +
-         " count users " + lobby.getAssociatedSession().getUsers().size());
-        lobbiesMap.remove(lobby.getId());
-        lobbies.remove(lobby);
-        gameSessionsController.deleteSession(lobby.getAssociatedSession());
-        // todo send all free users info that this lobby deleted
-    }
-
-    public boolean isLobbyAlive(Lobby lobby) {
-        return lobby.isAlive();
-    }
-
-    // todo add method that sends messages to all users and if one no respond delete users
-
-    public void deleteLobbyDeadUsers(Lobby lobby) {
-        final List<Id<UserEntity>> users = lobby.getUsers();
-        final List<Id<UserEntity>> deadUsers = new ArrayList<>();
-
-        for (Id<UserEntity> user: users) {
-//            if ()
-        }
-     }
-
-    public boolean checkLobbyBeforeStart() {
-        // todo check all users in lobby
-        return true;
-    }
-
-
-    public boolean checkLobbyUsersHealth(Lobby lobby) {
-        List<Id<UserEntity>> deadUsers = new ArrayList<>();
-        for (Id<UserEntity> uId : lobby.getUsers()) {
-            if (!remotePointService.isConnected(uId)) {
-                deadUsers.add(uId);
-            }
-        }
-
-        deadUsers.forEach(user -> lobby.getUsers().remove(user));
-//        while ()
-        if (!deadUsers.isEmpty()) {
-            for (Id<UserEntity> user : lobby.getUsers()) {
-                try {
-                    remotePointService.sendMessageToUser(user, new LobbyStateMessage(lobby.getId(),
-                            user, LobbyStateMessage.Action.DISCONNECTED));
-                } catch (IOException exception) {
-                    LOGGER.error("lobby error with users, lobby destroyed" + lobby.getId().toString());
-                    return false;
-                }
-            }
-            lobby.setState(Lobby.State.WAITING); // todo in function
-        }
-
-        return true;
+        this.lobbyOutMessageHandler = lobbyOutMessageHandler;
     }
 
     public Set<Lobby> getLobbies() {
         return lobbies;
     }
 
-    public void showLobbies(Id<UserEntity> uId) {
-        try {
-            // is it safe?
-            freeUsers.add(uId);
-            final List<OneLobbyInfo> lobbiesList = new ArrayList<>();
-            for (Id<Lobby> lId : lobbiesMap.keySet()) {
-                final Lobby lobby = lobbiesMap.get(lId);
-                if (lobby != null && lobby.isActive()) {
-                    lobbiesList.add(new OneLobbyInfo(lId.getId(), lId.getAdditionalInfo(),
-                            lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
-                            lobby.getFiledSize(), lobby.getGameTime()));
-                }
-            }
-            remotePointService.sendMessageToUser(uId, new Lobbies(lobbiesList));
-        } catch (IOException ignore) {
-        }
-    }
-
-    public boolean checkUserInLobby(Id<UserEntity> uId) {
-        try {
-            if (gameSessionsController.getGameUserSessions().get(uId) != null) {
-                remotePointService.sendMessageToUser(uId, new LobbyError("You cant create while you already play"));
-                return true;
-            }
-            return false;
-            // todo think what ret
-        } catch (IOException ignore) {
-            return false;
-        }
-    }
-
-    private void trySendInfoToUsers(Lobby lobby) {
-        List<Id<UserEntity>> users = lobby.getUsers();
-        List<Id<UserEntity>> deadUsers = new ArrayList<>();
-        for (Id<UserEntity> uId : users) {
-            if (!remotePointService.isConnected(uId)) {
-                deadUsers.add(uId);
+    public boolean isLobbyAlive(Lobby lobby) {
+        for (var user : lobby.getUsers()) {
+            if (!remotePointService.isConnected(user)) {
+                removeUser(lobby.getId(), user);
             }
         }
-
-
-
-        deadUsers.forEach(users::remove);
-//        while ()
-        while (!deadUsers.isEmpty() && !users.isEmpty()) {
-            final List<Id<UserEntity>> newDeadUsers = new ArrayList<>();
-            for (Id<UserEntity> user : users) {
-                for (Id<UserEntity> deadUser: deadUsers) {
-                    try {
-                        remotePointService.sendMessageToUser(user, new LobbyStateMessage(
-                                lobby.getId(), deadUser, LobbyStateMessage.Action.DISCONNECTED
-                        ));
-                    } catch (IOException i) {
-                        newDeadUsers.add(user);
-                    }
-                }
-                deadUsers.addAll(newDeadUsers);
-                users.removeAll(newDeadUsers);
-            }
-            for (Id<UserEntity> user : lobby.getUsers()) {
-                try {
-                    remotePointService.sendMessageToUser(user, new LobbyStateMessage(lobby.getId(),
-                            user, LobbyStateMessage.Action.DISCONNECTED));
-                } catch (IOException exception) {
-                    LOGGER.error("lobby error with users, lobby destroyed" + lobby.getId().toString());
-//                    return false;
-                }
-            }
-            lobby.setState(Lobby.State.WAITING); // todo in function
-        }
-    }
-
-    private boolean checkLobbyExist(Id<Lobby> lId, Id<UserEntity> uId) {
-        if (lId == null || lobbiesMap.get(lId) == null) {
-            try {
-                remotePointService.sendMessageToUser(uId, new LobbyError("Sorry lobby not found"));
-            } catch (IOException ignore) {
-            }
-            return false;
-        }
-        return true;
-    }
-
-
-    public void addUser(Id<Lobby> lId, Id<UserEntity> uId) {
-        /// user already in lobby
-        if (checkUserInLobby(uId)) {
-            return;
-        }
-
-        // error connecting to lobby
-        if (!checkLobbyExist(lId, uId)) {
-            return;
-        }
-
-        final Lobby lobby = lobbiesMap.get(lId);
-
-        // adds user to session and removes from freeusers
-//        gameSessionsController.addUser(uId, lobby.getAssociatedSession());
-        try {
-            for (Id<UserEntity> user : lobby.getUsers()) {
-                remotePointService.sendMessageToUser(user, new LobbyStateMessage(lId, uId,
-                        LobbyStateMessage.Action.CONNECTED));
-            }
-            remotePointService.sendMessageToUser(uId, new LobbyConnected(lobby.getUsers(), lobby.getId(),
-                    lobby.getOwnerId(), lobby.getFiledSize(), lobby.getGameTime()));
-        } catch (IOException e) {
-
-        }
-        freeUsers.remove(uId);
-        gameSessionsController.addUser(uId, lobby.getAssociatedSession());
-        try {
-            if (lobby.getAssociatedSession().isFullParty()) {
-                remotePointService.sendMessageToUser(lobby.getOwnerId(), new LobbyStateMessage(lobby.getId(), null,
-                        LobbyStateMessage.Action.READY));
-            }
-        } catch (IOException ignore) {
-
-        }
+        return lobby.isAlive();
     }
 
     private boolean insureCandidate(@NotNull Id<UserEntity> candidate) {
         return remotePointService.isConnected(candidate)
-                && userService.getUser(candidate.getAdditionalInfo()) != null;
+                && userService.getUserEntity(candidate.getAdditionalInfo()) != null;
     }
 
-
-
-    public void startLobby(Id<UserEntity> uId, Id<Lobby> lId) {
-        if (!checkLobbyExist(lId, uId)) {
-            return;
-        }
-
-        final Lobby lobby = lobbiesMap.get(lId);
-        if (!uId.equals(lobby.getOwnerId())) {
-            try {
-                remotePointService.sendMessageToUser(uId, new LobbyError("You cant start lobby"));
-            } catch (IOException ignore) {
-            }
-            return;
-        }
-
-
-        if (lobby.getAssociatedSession().isReady()) {
-            lobby.getAssociatedSession().initMultiplayerSession();
-            lobby.getAssociatedSession().setPlaying();
-
-            for (Id<UserEntity> user: lobby.getUsers()) {
-                try {
-                    remotePointService.sendMessageToUser(user, new GameStart(lobby.getAssociatedSession().getPlayerIds()));
-                } catch (IOException i) {
-
-                }
-            }
-
-            List<Id<UserEntity>> problemUsers = new ArrayList<>();
-            for (Id<UserEntity> user : lobby.getUsers()) {
-                if (!insureCandidate(user)) {
-                    problemUsers.add(user);
-                }
-            }
-
-            if (!problemUsers.isEmpty()) {
-                problemUsers.forEach(user -> lobby.getUsers().remove(user));
-                for (int i = 0; i < lobby.getUsers().size(); i++)
-                {
-                    for (int j = 0; j < problemUsers.size(); j++) {
-                        try {
-                            remotePointService.sendMessageToUser(lobby.getUsers().get(i),
-                                    new LobbyStateMessage(lobby.getId(), problemUsers.get(j),
-                                            LobbyStateMessage.Action.DISCONNECTED));//LobbyError("You cant start game, some users disconnetcted"));
-                        } catch (IOException e) {
-                            problemUsers.add(lobby.getUsers().get(i));
-                        }
-                    }
-                }
-                if (lobby.getUsers().isEmpty()) {
-                    removeLobby(lobby);
-                    return;
-                }
-
-                if (problemUsers.contains(lobby.getOwnerId())) {
-//                    try {
-//                        remotePointService.sendMessageToUser(lobby.getUsers().get(i),
-//                                new LobbyStateMessage(lobby.getId().getId(), problemUsers.get(j).getId(),
-//                                        LobbyStateMessage.Action.DISCONNECTED);//LobbyError("You cant start game, some users disconnetcted"));
-//                    } catch (IOException e) {
-//                        removeLobby(lobby);
-//                    }
-                }
-            } else {
-                lobby.setState(Lobby.State.GAME);
+    public void showLobbies(Id<UserEntity> userId) {
+        freeUsers.add(userId);
+        final List<OneLobbyInfo> lobbiesList = new ArrayList<>();
+        for (Id<Lobby> lId : lobbiesMap.keySet()) {
+            final Lobby lobby = lobbiesMap.get(lId);
+            if (lobby != null && lobby.isActive()) {
+                lobbiesList.add(new OneLobbyInfo(lobby));
             }
         }
-    }
-
-    public void removeUser(Id<Lobby> lId, Id<UserEntity> uId) {
-        if (!checkLobbyExist(lId, uId)) {
-            return;
-        }
-
-        final Lobby lobby = lobbiesMap.get(lId);
-
-        try {
-            if (lobby.getUsers().contains(uId)) {
-                for (Id<UserEntity> user : lobby.getUsers()) {
-                    remotePointService.sendMessageToUser(user, new LobbyStateMessage(lId, uId,
-                            LobbyStateMessage.Action.DISCONNECTED));
-                }
-            }
-        } catch (IOException e) {
-
-        }
-
-        freeUsers.add(uId);
-        try {
-            remotePointService.sendMessageToUser(uId, new LobbyStateMessage(lId, uId, LobbyStateMessage.Action.DISCONNECTED));
-        } catch (IOException i) {
-
-        }
-        gameSessionsController.removeUser(uId, lobby.getAssociatedSession());
-        if (lobby.getAssociatedSession().getUsers().isEmpty()) {
-            removeLobby(lobby);
-        }
+        lobbyOutMessageHandler.sendMessageToUser(new Lobbies(lobbiesList), userId);
     }
 
     public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
@@ -335,18 +82,170 @@ public class LobbyController {
         final GameSession gameSession = gameSessionsController.createSession(lobbySettings.getFieldSize(),
                 lobbySettings.getGameTime());
         gameSessionsController.addUser(uId, gameSession);
+
         final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
         lobbiesMap.put(lobby.getId(), lobby);
         lobbies.add(lobby);
-        try {
-            for (Id<UserEntity> user : freeUsers) {
-                remotePointService.sendMessageToUser(user, new OneLobbyInfo(lobby.getId().getId(),
-                        lobby.getId().getAdditionalInfo(),
-                        lobby.getUsers().size(), lobby.getOwnerId().getAdditionalInfo(),
-                        lobby.getFiledSize(), lobby.getGameTime()));
-            }
-            freeUsers.remove(uId);
-        } catch (IOException ignore) {
+
+        trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
+        freeUsers.remove(uId);
+    }
+
+    private void trySendMessageToFreeUsers(LobbyOutMessage message) {
+        for (var user : freeUsers) {
+            lobbyOutMessageHandler.sendMessageToUser(message, user);
         }
+    }
+
+    public void removeLobby(Lobby lobby) {
+        lobbiesMap.remove(lobby.getId());
+        lobbies.remove(lobby);
+        gameSessionsController.deleteSession(lobby.getAssociatedSession());
+        trySendMessageToFreeUsers(new LobbyDeletedInfo(lobby));
+        LOGGER.info("lobby deleted " + lobby.getId() + " owner " + lobby.getOwnerId().getAdditionalInfo()
+                + " count users " + lobby.getAssociatedSession().getUsers().size());
+    }
+
+    public void handleDeadUser(Lobby lobby, Id<UserEntity> user) {
+        final boolean isOwner = lobby.getOwnerId().equals(user);
+        gameSessionsController.removeUser(user, lobby.getAssociatedSession());
+        if (lobby.getUsers().size() == 0) {
+            return;
+            //todo set lobby dead or not need
+        }
+
+        trySendMessageToUsers(new LobbyStateMessage(lobby.getId(), user,
+                LobbyStateMessage.Action.DISCONNECTED), lobby);
+        if (isOwner) {
+            lobby.setOwner(lobby.getUsers().get(0));
+            lobbyOutMessageHandler.sendMessageToUser(new LobbyStateMessage(lobby.getId(), lobby.getOwnerId(),
+                    LobbyStateMessage.Action.NEW_OWNER), lobby.getOwnerId());
+        }
+    }
+
+    private void trySendMessageToUsers(LobbyOutMessage message, Lobby lobby) {
+        for (var user : lobby.getUsers()) {
+            if (!lobbyOutMessageHandler.sendMessageToUser(message, user)) {
+                handleDeadUser(lobby, user);
+            }
+        }
+    }
+
+    private void trySendMessageToLobbyUser(LobbyOutMessage message, Lobby lobby, Id<UserEntity> user) {
+        if (!lobbyOutMessageHandler.sendMessageToUser(message, user)) {
+            handleDeadUser(lobby, user);
+        }
+    }
+
+    private boolean checkUserInLobby(Id<UserEntity> userId) {
+        try {
+            if (gameSessionsController.getGameUserSessions().get(userId) != null) {
+                remotePointService.sendMessageToUser(userId,
+                        new LobbyError("You cant create while you already play"));
+                return true;
+            }
+            return false;
+        } catch (IOException ignore) {
+            return false;
+        }
+    }
+
+    private boolean checkLobbyExist(Id<Lobby> lobbyId, Id<UserEntity> userId) {
+        if (lobbyId == null || lobbiesMap.get(lobbyId) == null) {
+            try {
+                remotePointService.sendMessageToUser(userId, new LobbyError("Sorry lobby not found"));
+            } catch (IOException ignore) {
+                LOGGER.info("No such lobby {}", lobbyId);
+            }
+            return false;
+        }
+        return true;
+    }
+
+
+    public void addUser(Id<Lobby> lobbyId, Id<UserEntity> userId) {
+        // error connecting to lobby
+        if (!checkLobbyExist(lobbyId, userId)) {
+            return;
+        }
+
+        /// user already in lobby
+        if (checkUserInLobby(userId)) {
+            return;
+        }
+
+        final Lobby lobby = lobbiesMap.get(lobbyId);
+
+        if (lobby.getUsers().size() >= FULL_PARTY) {
+            lobbyOutMessageHandler.sendMessageToUser(new LobbyError("You cant join to lobby, its full"), userId);
+            return;
+        }
+
+        // adds user to session and removes from freeusers
+        if (lobbyOutMessageHandler.sendMessageToUser(new LobbyConnected(lobby), userId)) {
+            final LobbyStateMessage message = new LobbyStateMessage(lobbyId, userId,
+                    LobbyStateMessage.Action.CONNECTED);
+            trySendMessageToUsers(message, lobby);
+            freeUsers.remove(userId);
+            gameSessionsController.addUser(userId, lobby.getAssociatedSession());
+
+            if (lobby.isReady()) {
+                trySendMessageToLobbyUser(new LobbyStateMessage(lobby.getId(), null,
+                        LobbyStateMessage.Action.READY), lobby, lobby.getOwnerId());
+            }
+        }
+    }
+
+    public void startLobby(Id<UserEntity> userId, Id<Lobby> lobbyId) {
+        if (!checkLobbyExist(lobbyId, userId)) {
+            return;
+        }
+
+        final Lobby lobby = lobbiesMap.get(lobbyId);
+        if (!userId.equals(lobby.getOwnerId())) {
+            lobbyOutMessageHandler.sendMessageToUser(new LobbyError("You cant start lobby"), userId);
+            return;
+        }
+
+        if (lobby.isReady()) {
+            final List<Id<UserEntity>> problemUsers = new ArrayList<>();
+            for (Id<UserEntity> user : lobby.getUsers()) {
+                if (!insureCandidate(user)) {
+                    problemUsers.add(user);
+                }
+            }
+
+            if (!problemUsers.isEmpty()) {
+                lobby.getUsers().removeAll(problemUsers);
+                for (var problemUser : lobby.getUsers()) {
+                    trySendMessageToUsers(new LobbyStateMessage(lobbyId, problemUser,
+                            LobbyStateMessage.Action.DISCONNECTED), lobby);
+                }
+            } else {
+                lobby.getAssociatedSession().initMultiplayerSession();
+                trySendMessageToUsers(new GameStart(lobby.getAssociatedSession().getPlayerIds()), lobby);
+                if (lobby.isReady()) {
+                    lobby.getAssociatedSession().setPlaying();
+                }
+            }
+        }
+    }
+
+    public void reset(Lobby lobby) {
+
+    }
+
+    public void removeUser(Id<Lobby> lobbyId, Id<UserEntity> userId) {
+        if (!checkLobbyExist(lobbyId, userId)) {
+            return;
+        }
+
+        final Lobby lobby = lobbiesMap.get(lobbyId);
+        if (lobby.getUsers().contains(userId)) {
+            trySendMessageToUsers(new LobbyStateMessage(lobbyId, userId, LobbyStateMessage.Action.DISCONNECTED), lobby);
+        }
+
+        freeUsers.add(userId);
+        gameSessionsController.removeUser(userId, lobby.getAssociatedSession());
     }
 }

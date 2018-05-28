@@ -19,11 +19,8 @@ public class LobbyMessage extends Message {
         DISCONNECT,
         @JsonProperty("CHAT")
         CHAT,
-//        @JsonProperty("USERS")
-//        USERS,
         @JsonProperty("START")
         START
-        //todo add new message to start
     }
 
     public void setLobbyId(Long lobbyId) {

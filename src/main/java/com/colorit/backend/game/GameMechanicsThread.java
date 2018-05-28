@@ -14,15 +14,12 @@ import java.util.concurrent.Executors;
 
 @Service
 public class GameMechanicsThread implements Runnable {
-    @NotNull
-    private static final Logger LOGGER = LoggerFactory.getLogger(GameMechanicsThread.class);
+    private static final @NotNull Logger LOGGER = LoggerFactory.getLogger(GameMechanicsThread.class);
     private static final long STEP_TIME = 50;
 
-    @NotNull
-    private final GameMechanics gameMechanics;
+    private final @NotNull GameMechanics gameMechanics;
 
-    @NotNull
-    private final Clock clock = Clock.systemDefaultZone();
+    private final @NotNull Clock clock = Clock.systemDefaultZone();
 
     private final Executor tickExecutor = Executors.newSingleThreadExecutor();
 

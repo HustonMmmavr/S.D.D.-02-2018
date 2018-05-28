@@ -7,8 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class GameObject {
     private static final AtomicLong ID_GENERATOR = new AtomicLong();
-    @NotNull
-    protected final Id<GameObject> id;
+    protected final @NotNull Id<GameObject> id;
 
     public GameObject() {
         this.id = Id.of(ID_GENERATOR.incrementAndGet());

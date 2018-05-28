@@ -14,10 +14,8 @@ import javax.validation.constraints.NotNull;
 
 @Service
 public class LobbyHandler extends MessageHandler<LobbyMessage> {
-    @NotNull
-    private final LobbyController lobbyController;
-    @NotNull
-    private final MessageHandlerContainer messageHandlerContainer;
+    private final @NotNull LobbyController lobbyController;
+    private final @NotNull MessageHandlerContainer messageHandlerContainer;
 
     public LobbyHandler(@NotNull LobbyController lobbyController,
                         @NotNull MessageHandlerContainer messageHandlerContainer) {
@@ -48,8 +46,6 @@ public class LobbyHandler extends MessageHandler<LobbyMessage> {
             case START:
                 lobbyController.startLobby(forUser, Id.of(message.getLobbyId()));
                 break;
-//            case USERS:
-//                lobbyController.getLobbyUsers(Id.of(message.getLobbyId()), forUser);
             default:
                 break;
 

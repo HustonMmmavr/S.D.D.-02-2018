@@ -16,8 +16,7 @@ public class GameTaskScheduler {
 
     private final MechanicsTimeService timeService;
 
-    @NotNull
-    private final GameSessionsController gameSessionsController;
+    private final @NotNull GameSessionsController gameSessionsController;
 
     public GameTaskScheduler(MechanicsTimeService timeService, GameSessionsController gameSessionsController) {
         this.timeService = timeService;

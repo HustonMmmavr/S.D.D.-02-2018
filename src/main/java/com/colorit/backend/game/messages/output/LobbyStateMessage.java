@@ -3,9 +3,8 @@ package com.colorit.backend.game.messages.output;
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.lobby.Lobby;
-import com.colorit.backend.websocket.Message;
-//statee
-public class LobbyStateMessage extends Message {
+
+public class LobbyStateMessage extends LobbyOutMessage {
     private Long lobbyId;
     private String nickname;
     private Long userId;
@@ -15,7 +14,8 @@ public class LobbyStateMessage extends Message {
     public enum Action {
         CONNECTED,
         DISCONNECTED,
-        READY
+        READY,
+        NEW_OWNER
     }
 
     public LobbyStateMessage(Id<Lobby> lobbyId, Id<UserEntity> userId, Action action) {

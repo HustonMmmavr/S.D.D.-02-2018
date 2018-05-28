@@ -39,6 +39,7 @@ public class GameField extends GameObject {
         return matrixRank;
     }
 
+    @SuppressWarnings("OverlyComplexBooleanExpression")
     private boolean isPointValid(List<List<Integer>> fieldCopy, Point point, int playerId) {
         return (
                 (point.getX() > 0 && point.getX() < this.matrixRank - 1) && // not on first or last col
@@ -49,6 +50,7 @@ public class GameField extends GameObject {
         );
     }
 
+    @SuppressWarnings("OverlyComplexBooleanExpression")
     private boolean isDotValidNoEdgeCheck(List<List<Integer>> fieldCopy, Point point, int playerId) {
         return (
                 (point.getX() > 0 && point.getX() <= this.matrixRank - 1) && // not on first or last col
@@ -96,20 +98,20 @@ public class GameField extends GameObject {
         4.2. Не обработан ранее (т.е. его цвет отличается от цвета границы или цвета внутренней области);
         5. Если стек не пуст, перейти к шагу 2
         */
-//        boolean isBadArea = false;
 
         for (Point startPoint : checkArray) {
             if (!((matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == SCORED) ||
                     (matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == BAD_AREA))) {
-                boolean isBadArea = false;
-                LinkedList<Point> curAreaPoints = new LinkedList<>();
+                final LinkedList<Point> curAreaPoints = new LinkedList<>();
                 stack.addLast(startPoint);
+                boolean isBadArea = false;
                 while (!stack.isEmpty()) {
                     final Point curPoint = stack.pollLast();
                     matrixCopy.get(curPoint.getY()).set(curPoint.getX(), SCORED);
                     curAreaPoints.addLast(curPoint);
 
                     // if on edge => badArea
+                    //noinspection OverlyComplexBooleanExpression
                     if (!isBadArea && (curPoint.getY() == 0 || curPoint.getY() == matrixRank - 1) ||
                             curPoint.getX() == 0 || curPoint.getX() == matrixRank - 1) {
                         isBadArea = true;

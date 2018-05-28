@@ -12,8 +12,7 @@ import java.io.IOException;
 
 @Service
 public class ServerSnapshotService {
-    @NotNull
-    private final RemotePointService remotePointService;
+    private final @NotNull RemotePointService remotePointService;
 
     public ServerSnapshotService(@NotNull RemotePointService remotePointService) {
         this.remotePointService = remotePointService;

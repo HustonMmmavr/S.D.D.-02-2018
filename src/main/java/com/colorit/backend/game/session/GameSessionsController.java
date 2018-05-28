@@ -15,19 +15,16 @@ import java.util.stream.Collectors;
 @Service
 public class GameSessionsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionsController.class);
-    @NotNull
-    private RemotePointService remotePointService;
-    @NotNull
-    private final Set<GameSession> gamesSessions = new LinkedHashSet<>();
+    private @NotNull RemotePointService remotePointService;
+    private final @NotNull Set<GameSession> gamesSessions = new LinkedHashSet<>();
 
     private HashMap<Id<UserEntity>, GameSession> gameUserSessions = new HashMap<>();
-    @NotNull
-    private final ClientSnapshotService clientSnapshotService;
+    private final @NotNull ClientSnapshotService clientSnapshotService;
 
     public void forceTerminate(@NotNull GameSession gameSession, boolean error) {
         // todo delete associated lobby or only remove session
         final boolean exists = gamesSessions.contains(gameSession);
-        gameSession.setFinished();
+//        gameSession.setFinished();
 //        usersMap.remove(gameSession//    @Override
 //    public void changeDirection(@NotNull Id<UserEntity> userId, @NotNull Direction direction) {
 //        GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
@@ -65,15 +62,15 @@ public class GameSessionsController {
         return gameSession;
     }
 
-    public List<Id<UserEntity>> checkHealthState(@NotNull GameSession gameSession) {
-        List<Id<UserEntity>> deadUsers = new ArrayList<>();
-        gameSession.getUsers().forEach(user -> {
-            if (!remotePointService.isConnected(user)) {
-                deadUsers.add(user);
-            }
-        });
-        return  deadUsers;
-    }
+//    public List<Id<UserEntity>> checkHealthState(@NotNull GameSession gameSession) {
+//        final List<Id<UserEntity>> deadUsers = new ArrayList<>();
+//        gameSession.getUsers().forEach(user -> {
+//            if (!remotePointService.isConnected(user)) {
+//                deadUsers.add(user);
+//            }
+//        });
+//        return  deadUsers;
+//    }
 
     public void deleteSession(GameSession gameSession) {
         gameSession.getUsers().forEach(user -> gameUserSessions.remove(user));

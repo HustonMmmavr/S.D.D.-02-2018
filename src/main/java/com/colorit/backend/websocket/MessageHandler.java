@@ -7,8 +7,7 @@ import javax.validation.constraints.NotNull;
 
 
 public abstract class MessageHandler<T extends Message> {
-    @NotNull
-    private final Class<T> clazz;
+    private final @NotNull Class<T> clazz;
 
     public MessageHandler(@NotNull Class<T> clazz) {
         this.clazz = clazz;

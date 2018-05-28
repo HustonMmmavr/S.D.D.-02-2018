@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Lobby {
-    private final static AtomicLong ID_GENERATOR = new AtomicLong(0);
+    private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
     private Id<UserEntity> ownerId;
     private final Id<Lobby> id;
     private final GameSession associatedSession;
@@ -21,12 +21,24 @@ public class Lobby {
         FINISHED
     }
 
+    public boolean isPlaying() {
+        return associatedSession.isPlaying();
+    }
+
+    public boolean isReady() {
+        return associatedSession.isReady();
+    }
+
     public Lobby(LobbySettings lobbySettings, Id<UserEntity> ownerId, GameSession gameSession) {
         this.state = State.WAITING;
         this.id = Id.of(ID_GENERATOR.getAndIncrement());
         this.ownerId = ownerId;
         id.setAdditionalInfo(lobbySettings.getName());
         this.associatedSession = gameSession;
+    }
+
+    public void setOwner(Id<UserEntity> user) {
+        this.ownerId = user;
     }
 
     public State getState() {
@@ -44,7 +56,6 @@ public class Lobby {
     public void setWaiting() {
         this.associatedSession.setWaiting();
     }
-
 
 
     public int getFiledSize() {
@@ -68,11 +79,8 @@ public class Lobby {
     }
 
     public boolean isAlive() {
-//        if (associatedSession.getUsers().isEmpty()) {
-//            return false;
-//        }
         return !associatedSession.getUsers().isEmpty();
-     }
+    }
 
     public List<Id<UserEntity>> getUsers() {
         return associatedSession.getUsers();
@@ -94,11 +102,3 @@ public class Lobby {
         return state == State.WAITING || state == State.READY;
     }
 }
-
-
-//    private final Integer fieldSize;\
-//    private final Integer gameTime;
-//    private final Boolean isMultiplayer;
-//        this.fieldSize = lobbySettings.getFieldSize();
-//        this.gameTime = lobbySettings.getGameTime();
-//        this.isMultiplayer = lobbySettings.getMultiplayer();

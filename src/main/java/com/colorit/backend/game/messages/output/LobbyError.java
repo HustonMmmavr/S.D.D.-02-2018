@@ -1,8 +1,6 @@
 package com.colorit.backend.game.messages.output;
 
-import com.colorit.backend.websocket.Message;
-
-public class LobbyError extends Message {
+public class LobbyError extends LobbyOutMessage {
     private String message;
 
     public LobbyError(String message) {

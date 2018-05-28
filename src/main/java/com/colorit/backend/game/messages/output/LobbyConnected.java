@@ -3,12 +3,11 @@ package com.colorit.backend.game.messages.output;
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.lobby.Lobby;
-import com.colorit.backend.websocket.Message;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LobbyConnected extends Message {
+public class LobbyConnected extends LobbyOutMessage {
     private Id<UserEntity> owner;
     private List<Id<UserEntity>> users;
     private long id;
@@ -16,13 +15,22 @@ public class LobbyConnected extends Message {
     private int fieldSize;
     private long gameTime;
 
+    public LobbyConnected(Lobby lobby) {
+        this.users = new ArrayList<>(lobby.getUsers());
+        this.name = lobby.getId().getAdditionalInfo();
+        this.id = lobby.getId().getId();
+        this.owner = lobby.getOwnerId();
+        this.fieldSize = lobby.getFiledSize();
+        this.gameTime = lobby.getGameTime();
+    }
+
     public LobbyConnected(List<Id<UserEntity>> users, Id<Lobby> lobbyId, Id<UserEntity> owner, int fieldSize, long gameTime) {
         this.users = new ArrayList<>();
         this.name = lobbyId.getAdditionalInfo();
         this.owner = owner;
         this.id = lobbyId.getId();
         this.fieldSize = fieldSize;
-        this.users.addAll(users);//forEach(user -> this.users.add(user));
+        this.users.addAll(users);
         this.gameTime = gameTime;
     }
 

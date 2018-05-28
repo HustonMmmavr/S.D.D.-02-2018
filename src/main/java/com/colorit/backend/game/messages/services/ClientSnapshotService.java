@@ -22,25 +22,24 @@ public class ClientSnapshotService {
         clientSnaps.add(snap);
     }
 
-    @NotNull
-    public List<ClientSnapshot> getSnapForUser(@NotNull Id<UserEntity> user) {
+    public @NotNull List<ClientSnapshot> getSnapForUser(@NotNull Id<UserEntity> user) {
         return snaps.getOrDefault(user, Collections.emptyList());
     }
 
     public void processSnapshotsFor(@NotNull GameSession gameSession) {
         final Collection<Player> players = new ArrayList<>(gameSession.getPlayers());
-        for (Player player: players) {
+        for (Player player : players) {
             final List<ClientSnapshot> playerSnaps = getSnapForUser(player.getUserId());
             if (playerSnaps.isEmpty()) {
                 continue;
             }
 
             playerSnaps.stream().filter(ClientSnapshot::isChanged).findFirst().ifPresent(snap -> processDirectionChange(snap, gameSession, player));
-         }
+        }
     }
 
     private void processDirectionChange(@NotNull ClientSnapshot snap, @NotNull GameSession gameSession,
-                                   @NotNull Player player) {
+                                        @NotNull Player player) {
         // or send user here;
         gameSession.changeDirection(player.getUserId(), snap.getDirection());
     }

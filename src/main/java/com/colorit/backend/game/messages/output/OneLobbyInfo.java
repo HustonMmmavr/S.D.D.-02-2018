@@ -1,14 +1,24 @@
 package com.colorit.backend.game.messages.output;
 
-import com.colorit.backend.websocket.Message;
+import com.colorit.backend.game.lobby.Lobby;
 
-public class OneLobbyInfo extends Message {
+public class OneLobbyInfo extends LobbyOutMessage {
     private String owner;
     private long id;
     private String name;
     private long countPlayers;
     private int fieldSize;
     private long gameTime;
+
+
+    public OneLobbyInfo(Lobby lobby) {
+        this.countPlayers = lobby.getUsers().size();
+        this.name = lobby.getId().getAdditionalInfo();
+        this.owner = lobby.getOwnerId().getAdditionalInfo();
+        this.id = lobby.getId().getId();
+        this.fieldSize = lobby.getFiledSize();
+        this.gameTime = lobby.getGameTime();
+    }
 
     public OneLobbyInfo(long id, String name, long countPlayers, String owner, int fieldSize, long gameTime) {
         this.countPlayers = countPlayers;

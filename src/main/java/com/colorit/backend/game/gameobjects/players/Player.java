@@ -72,7 +72,6 @@ public class Player extends GameObject {
 
     // ставить таску на бонус
     public boolean move(double timeDelay, int minBorder, int maxBorder) {
-//        int newtimeDelay / ONE_STEP_TIME * velocity;
         offset += timeDelay / ONE_TIME_STEP * velocity;
         final boolean isOnCell = offset / DISTANCE >= 1;
         if (isOnCell) {
@@ -90,7 +89,7 @@ public class Player extends GameObject {
                         minBorder : currentPosition.getX() - 1);
             }
             if (currentDirection == Direction.UP) {
-                currentPosition.setY(currentPosition.getY() <=  minBorder ?
+                currentPosition.setY(currentPosition.getY() <= minBorder ?
                         minBorder : currentPosition.getY() - 1);
             }
 
@@ -162,7 +161,7 @@ public class Player extends GameObject {
         private Integer offset;
         private Direction newDirection;
 
-//        public PlayerSnap(Direction direction, Integer score, Integer id, Integer velocity, Direction newDirection) {
+        //        public PlayerSnap(Direction direction, Integer score, Integer id, Integer velocity, Direction newDirection) {
         public PlayerSnap(Player player) {
             this.position = player.getPosition();
             this.direction = player.getCurrentDirection();

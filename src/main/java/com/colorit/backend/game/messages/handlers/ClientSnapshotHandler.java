@@ -13,12 +13,11 @@ import javax.validation.constraints.NotNull;
 
 @Service
 public class ClientSnapshotHandler extends MessageHandler<ClientSnapshot> {
-    @NotNull
-    private final GameMechanics gameMechanics;
+    private final @NotNull GameMechanics gameMechanics;
     private final @NotNull MessageHandlerContainer messageHandlerContainer;
 
     public ClientSnapshotHandler(@NotNull GameMechanics gameMechanics,
-                          @NotNull MessageHandlerContainer messageHandlerContainer) {
+                                 @NotNull MessageHandlerContainer messageHandlerContainer) {
         super(ClientSnapshot.class);
         this.messageHandlerContainer = messageHandlerContainer;
         this.gameMechanics = gameMechanics;

@@ -29,7 +29,7 @@ public class GameSession {
     private long gameTime;
     private long timePlaying;
 
-    public GameSession(GameSessionsController gameSessionsController,int fieldSize, long gameTime) {
+    public GameSession(GameSessionsController gameSessionsController, int fieldSize, long gameTime) {
         id = Id.of(ID_GENERATOR.getAndIncrement());
         gameField = new GameField(fieldSize);
         sessionStatus = Status.WAITING;
@@ -61,11 +61,13 @@ public class GameSession {
         return this.sessionStatus == Status.READY;
     }
 
-    public void setFinished() {
-        this.sessionStatus = Status.FINISHED;
-    }
+    //public void setFinished() {
+    //this.sessionStatus = Status.FINISHED;
+    //}
 
-    public boolean isFinished() {return this.sessionStatus == Status.FINISHED; }
+    public boolean isFinished() {
+        return this.sessionStatus == Status.FINISHED;
+    }
 
     public void setPlaying() {
         this.sessionStatus = Status.PLAYING;
@@ -103,6 +105,9 @@ public class GameSession {
 
     public void addUser(Id<UserEntity> userId) {
         users.add(userId);
+        if (users.size() == FULL_PARTY) {
+            this.sessionStatus = Status.READY;
+        }
     }
 
     //todo
@@ -111,7 +116,7 @@ public class GameSession {
     }
 
     public List<Id<Player>> getPlayerIds() {
-        List<Id<Player>> playerIds = new ArrayList<>();
+        final List<Id<Player>> playerIds = new ArrayList<>();
         players.forEach(player -> playerIds.add(player.getPlayerId()));
         return playerIds;
     }
@@ -120,8 +125,8 @@ public class GameSession {
         playersMap.clear();
         players.clear();
         long playerId = 1;
-        for (Id<UserEntity> user: users) {
-            final Point startPoint = new Point(playerId == 1 || playerId == 4  ?  0 : gameField.getRank() - 1 ,
+        for (Id<UserEntity> user : users) {
+            final Point startPoint = new Point(playerId == 1 || playerId == 4 ? 0 : gameField.getRank() - 1,
                     playerId < 3 ? 0 : gameField.getRank() - 1);
             final Player player = new Player(user, Id.of(playerId), startPoint);
             gameField.markCell(startPoint, playerId);
@@ -167,7 +172,7 @@ public class GameSession {
                     player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
                     player.setAddScore(false);
                 } else {
-                    player.setAddScore(gameField.checkArea(player.getPosition(), (int)player.getPlayerId().getId()));
+                    player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
                 }
             }
         });

@@ -26,16 +26,11 @@ public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
     private static final String SESSION_KEY = "nickname";
-    @NotNull
-    private final MessageHandlerContainer messageHandlerContainer;
-    @NotNull
-    private final RemotePointService remotePointService;
-    @NotNull
-    private final IUserService userService;
-    @NotNull
-    private final ObjectMapper objectMapper;
-    @NotNull
-    private final Map<String, Id<UserEntity>> idMap = new ConcurrentHashMap<>();
+    private final @NotNull MessageHandlerContainer messageHandlerContainer;
+    private final @NotNull RemotePointService remotePointService;
+    private final @NotNull IUserService userService;
+    private final @NotNull ObjectMapper objectMapper;
+    private final @NotNull Map<String, Id<UserEntity>> idMap = new ConcurrentHashMap<>();
 
 
     public GameSocketHandler(@NotNull ObjectMapper objectMapper,
@@ -70,18 +65,17 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         final String nickname = (String) webSocketSession.getAttributes().get(SESSION_KEY);
-        // remove this maybe, or make inmemory db
         final UserServiceResponse userServiceResponse = userService.getUserEntity(nickname);
+        Id<UserEntity> userId;
 
-        // todo check idMap
-        if (nickname == null || idMap.get(nickname) == null) {
+        if (nickname == null || !userServiceResponse.isValid() || (userId = idMap.get(nickname)) == null) {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
             return;
         }
-        handleMessage((UserEntity) userServiceResponse.getData(), message);
+        handleMessage(userId, message);
     }
 
-    private void handleMessage(UserEntity userProfile, TextMessage text) {
+    private void handleMessage(Id<UserEntity> userId, TextMessage text) {
         final Message message;
         try {
             message = objectMapper.readValue(text.getPayload(), Message.class);
@@ -90,9 +84,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         try {
-//            Id<UserEntity> uId = Id.of(userProfile.getId());
-//            uId.setAdditionalInfo(userProfile.getNickname());
-            messageHandlerContainer.handle(message, idMap.get(userProfile.getNickname()));
+            messageHandlerContainer.handle(message, userId);
         } catch (HandleException e) {
             LOGGER.error("Can't handle message of type " + message.getClass().getName() + " with content: " + text, e);
         }

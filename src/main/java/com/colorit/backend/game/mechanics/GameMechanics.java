@@ -24,31 +24,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class GameMechanics implements IGameMechanics {
-    private final static Logger LOGGER = LoggerFactory.getLogger(GameMechanics.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameMechanics.class);
 
-    @NotNull
-    private final GameSessionsController gameSessionsController;
+    private final @NotNull GameSessionsController gameSessionsController;
 
-    @NotNull
-    private final RemotePointService remotePointService;
+    private final @NotNull RemotePointService remotePointService;
 
-    @NotNull
-    private final ServerSnapshotService serverSnapshotService;
+    private final @NotNull ServerSnapshotService serverSnapshotService;
 
-    @NotNull
-    private final ClientSnapshotService clientSnapshotService;
+    private final @NotNull ClientSnapshotService clientSnapshotService;
 
-    @NotNull
-    private final LobbyController lobbyController;
+    private final @NotNull LobbyController lobbyController;
 
-    @NotNull
-    private final MechanicsTimeService mechanicsTimeService;
+    private final @NotNull MechanicsTimeService mechanicsTimeService;
 
-    @NotNull
-    private final GameTaskScheduler gameTaskScheduler;
+    private final @NotNull GameTaskScheduler gameTaskScheduler;
 
-    @NotNull
-    private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
+    private final @NotNull Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
 
     public GameMechanics(@NotNull GameSessionsController gameSessionsController,
                          @NotNull RemotePointService remotePointService,
@@ -94,42 +86,55 @@ public class GameMechanics implements IGameMechanics {
         gameTaskScheduler.tick();
 
         // скорость если хотим ускорение
-        final List<GameSession> sessionsToTerminate = new ArrayList<>();
+//        final List<GameSession> sessionsToTerminate = new ArrayList<>();
         final List<GameSession> sessionsToFinish = new ArrayList<>();
+        final List<Lobby> lobbiesToFinish = new ArrayList<>();
         final List<Lobby> deadLobbies = new ArrayList<>();
         for (Lobby lobby : lobbyController.getLobbies()) {
-            if (lobbyController.isLobbyAlive(lobby) && !lobby.isFinished()) {
-                GameSession gameSession = lobby.getAssociatedSession();
-                if (gameSession.isFinised()) {
-                    sessionsToFinish.add(gameSession);
-                }
-
-
-                // todo returs array of dea users and deletes them from session
-                //  List<Id<UserEntity>> deadUsers = gameSessionsController.checkHealthState(gameSession);
-                //  if (!deadUsers.isEmpty()) {
-                //      deadUsers.forEach(user -> lobbyController.removeUser(lobby.getId(), user));
-                //  }
-
-                // todo get al
-                try {
-                    if (gameSession.isPlaying()) {
-                        gameSession.movePlayers(frameTime);
-                        gameSession.subTime(frameTime);
-                        serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
-                    }
-                } catch (RuntimeException ex) {
-                    LOGGER.error("Failed to send snapshots, terminating the session", ex);
-                    sessionsToTerminate.add(gameSession);
-                }
-            } else {
+            if (!lobbyController.isLobbyAlive(lobby)) {
                 deadLobbies.add(lobby);
             }
+
+            // fuck
+            if (lobby.isPlaying() && !lobby.isFinished()) {
+                final GameSession gameSession = lobby.getAssociatedSession();
+                gameSession.movePlayers(frameTime);
+                gameSession.subTime(frameTime);
+                serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
+
+                // todo send info to users and delete dead users
+            } else {
+                lobbiesToFinish.add(lobby);
+            }
+
+//            if (lobby.isFinished()) {
+//                lobbiesToFinish.add(lobby);
+//            }
+//             if (lobbyController.isLobbyAlive(lobby) && !lobby.isFinished()) {
+//                final GameSession gameSession = lobby.getAssociatedSession();
+//                if (gameSession.isFinised()) {
+//                    sessionsToFinish.add(gameSession);
+//                }
+//
+//                try {
+//                    if (gameSession.isPlaying()) {
+//                        gameSession.movePlayers(frameTime);
+//                        gameSession.subTime(frameTime);
+//                        serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
+//                    }
+//                } catch (RuntimeException ex) {
+//                    LOGGER.error("Failed to send snapshots, terminating the session", ex);
+//                    sessionsToTerminate.add(gameSession);
+//                }
+//            } else {
+//                deadLobbies.add(lobby);
+//            }
         }
 
         deadLobbies.forEach(lobbyController::removeLobby);
-        sessionsToFinish.forEach(GameSession::initMultiplayerSession);//gameSessionsController.(session, false));
+        lobbiesToFinish.forEach(lobbyController::reset);
 
+//        sessionsToFinish.forEach(GameSession::initMultiplayerSession); // resetLobby
         clientSnapshotService.reset();
         mechanicsTimeService.tick(frameTime);
     }

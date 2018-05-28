@@ -2,7 +2,6 @@ package com.colorit.backend.game.mechanics;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
-import com.colorit.backend.game.gameobjects.Direction;
 import com.colorit.backend.game.messages.input.ClientSnapshot;
 
 import javax.validation.constraints.NotNull;

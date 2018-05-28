@@ -13,10 +13,8 @@ import javax.validation.constraints.NotNull;
 
 @Service
 public class ShowLobbiesHandler extends MessageHandler<ShowLobbies.Request> {
-    @NotNull
-    private final LobbyController lobbyController;
-    @NotNull
-    private final MessageHandlerContainer messageHandlerContainer;
+    private final @NotNull LobbyController lobbyController;
+    private final @NotNull MessageHandlerContainer messageHandlerContainer;
 
     public ShowLobbiesHandler(@NotNull LobbyController lobbyController,
                               @NotNull MessageHandlerContainer messageHandlerContainer) {

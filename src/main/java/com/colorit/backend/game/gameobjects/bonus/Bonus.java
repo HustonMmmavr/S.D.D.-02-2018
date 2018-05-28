@@ -41,7 +41,7 @@ public class Bonus extends GameObject {
     private final BonusType type;
 
     public Bonus() {
-        point = new Point(0,0);
+        point = new Point(0, 0);
         expiresIn = 0;
         type = BonusType.FILL_LINE;
     }
