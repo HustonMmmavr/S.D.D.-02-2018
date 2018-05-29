@@ -3,7 +3,6 @@ package com.colorit.backend.game.messages.services;
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.gameobjects.players.Player;
-import com.colorit.backend.game.mechanics.GameMechanics;
 import com.colorit.backend.game.messages.input.ClientSnapshot;
 import com.colorit.backend.game.session.GameSession;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,9 @@ public class ClientSnapshotService {
                 continue;
             }
 
-            playerSnaps.stream().filter(ClientSnapshot::isChanged).findFirst().ifPresent(snap -> processDirectionChange(snap, gameSession, player));
+            playerSnaps.stream().filter(ClientSnapshot::isChanged)
+                    .findFirst()
+                    .ifPresent(snap -> processDirectionChange(snap, gameSession, player));
         }
     }
 
@@ -44,8 +45,8 @@ public class ClientSnapshotService {
         gameSession.changeDirection(player.getUserId(), snap.getDirection());
     }
 
-    public void clearForUser(Id<UserEntity> uId) {
-        snaps.remove(uId);
+    public void clearForUser(Id<UserEntity> userId) {
+        snaps.remove(userId);
     }
 
     public void reset() {

@@ -27,12 +27,12 @@ public class GameField extends GameObject {
         }
     }
 
-    private void markCell(int iIdx, int jIdx, int id) {
-        this.matrix.get(iIdx).set(jIdx, id);
+    private void markCell(int idxI, int idxJ, int id) {
+        this.matrix.get(idxI).set(idxJ, id);
     }
 
     public void markCell(Point position, long id) {
-        markCell(position.getY(), position.getX(), (int) id);
+        markCell(position.getPosY(), position.getPosX(), (int) id);
     }
 
     public int getRank() {
@@ -42,30 +42,30 @@ public class GameField extends GameObject {
     @SuppressWarnings("OverlyComplexBooleanExpression")
     private boolean isPointValid(List<List<Integer>> fieldCopy, Point point, int playerId) {
         return (
-                (point.getX() > 0 && point.getX() < this.matrixRank - 1) && // not on first or last col
-                        (point.getY() > 0 && point.getY() < this.matrixRank - 1) && // not on first or last row
-                        (fieldCopy.get(point.getY()).get(point.getX()) != playerId) && // current player is not owner of cell
-                        (fieldCopy.get(point.getY()).get(point.getX()) != SCORED) && // not marked as scored
-                        (fieldCopy.get(point.getY()).get(point.getX()) != BAD_AREA) // not marked as bad area
+                (point.getPosX() > 0 && point.getPosX() < this.matrixRank - 1) && // not on first or last col
+                        (point.getPosY() > 0 && point.getPosY() < this.matrixRank - 1) && // not on first or last row
+                        (fieldCopy.get(point.getPosY()).get(point.getPosX()) != playerId) && // current player is not owner of cell
+                        (fieldCopy.get(point.getPosY()).get(point.getPosX()) != SCORED) && // not marked as scored
+                        (fieldCopy.get(point.getPosY()).get(point.getPosX()) != BAD_AREA) // not marked as bad area
         );
     }
 
     @SuppressWarnings("OverlyComplexBooleanExpression")
     private boolean isDotValidNoEdgeCheck(List<List<Integer>> fieldCopy, Point point, int playerId) {
         return (
-                (point.getX() > 0 && point.getX() <= this.matrixRank - 1) && // not on first or last col
-                        (point.getY() > 0 && point.getY() <= this.matrixRank - 1) && // not on first or last row
-                        (fieldCopy.get(point.getY()).get(point.getX()) != playerId) && // current player is not owner of cell
-                        (fieldCopy.get(point.getY()).get(point.getX()) != SCORED) && // not marked as scored
-                        (fieldCopy.get(point.getY()).get(point.getX()) != BAD_AREA) // not marked as bad area
+                (point.getPosX() > 0 && point.getPosX() <= this.matrixRank - 1) && // not on first or last col
+                        (point.getPosY() > 0 && point.getPosY() <= this.matrixRank - 1) && // not on first or last row
+                        (fieldCopy.get(point.getPosY()).get(point.getPosX()) != playerId) && // current player is not owner of cell
+                        (fieldCopy.get(point.getPosY()).get(point.getPosX()) != SCORED) && // not marked as scored
+                        (fieldCopy.get(point.getPosY()).get(point.getPosX()) != BAD_AREA) // not marked as bad area
         );
     }
 
     private List<Point> getArrayOfPointsToCheck(List<List<Integer>> fieldCopy, Point position, int playerId) {
         final List<Point> pointsToCheck = new ArrayList<>();
 
-        for (int x = position.getX() - 1; x <= position.getX() + 1; x++) {
-            for (int y = position.getY() - 1; y <= position.getY() + 1; y++) {
+        for (int x = position.getPosX() - 1; x <= position.getPosX() + 1; x++) {
+            for (int y = position.getPosY() - 1; y <= position.getPosY() + 1; y++) {
                 final Point pointToCheck = new Point(x, y);
                 if (isPointValid(fieldCopy, pointToCheck, playerId)) {
                     pointsToCheck.add(pointToCheck);
@@ -100,26 +100,26 @@ public class GameField extends GameObject {
         */
 
         for (Point startPoint : checkArray) {
-            if (!((matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == SCORED)
-                    || (matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == BAD_AREA))) {
+            if (!((matrixCopy.get(startPoint.getPosY()).get(startPoint.getPosX()) == SCORED)
+                    || (matrixCopy.get(startPoint.getPosY()).get(startPoint.getPosX()) == BAD_AREA))) {
                 final LinkedList<Point> curAreaPoints = new LinkedList<>();
                 stack.addLast(startPoint);
                 boolean isBadArea = false;
                 while (!stack.isEmpty()) {
                     final Point curPoint = stack.pollLast();
-                    matrixCopy.get(curPoint.getY()).set(curPoint.getX(), SCORED);
+                    matrixCopy.get(curPoint.getPosY()).set(curPoint.getPosX(), SCORED);
                     curAreaPoints.addLast(curPoint);
 
                     // if on edge => badArea
                     //noinspection OverlyComplexBooleanExpression
-                    if (!isBadArea && (curPoint.getY() == 0 || curPoint.getY() == matrixRank - 1)
-                           || curPoint.getX() == 0 || curPoint.getX() == matrixRank - 1) {
+                    if (!isBadArea && (curPoint.getPosY() == 0 || curPoint.getPosY() == matrixRank - 1)
+                           || curPoint.getPosX() == 0 || curPoint.getPosX() == matrixRank - 1) {
                         isBadArea = true;
                     }
 
                     // adding around dots
-                    for (int y = curPoint.getY() - 1; y <= curPoint.getY() + 1; y++) {
-                        for (int x = curPoint.getX() - 1; x <= curPoint.getX() + 1; x++) {
+                    for (int y = curPoint.getPosY() - 1; y <= curPoint.getPosY() + 1; y++) {
+                        for (int x = curPoint.getPosX() - 1; x <= curPoint.getPosX() + 1; x++) {
                             final Point pointToAdd = new Point(x, y);
                             if (isDotValidNoEdgeCheck(matrixCopy, pointToAdd, playerId)) {
                                 stack.addLast(pointToAdd);
@@ -139,12 +139,12 @@ public class GameField extends GameObject {
                 while (!curAreaPoints.isEmpty()) {
                     final Point pointToColor = curAreaPoints.pollLast();
                     if (isBadArea) {
-                        matrixCopy.get(pointToColor.getY()).set(pointToColor.getX(), BAD_AREA);
+                        matrixCopy.get(pointToColor.getPosY()).set(pointToColor.getPosX(), BAD_AREA);
                     } else {
-                        matrixCopy.get(pointToColor.getY()).set(pointToColor.getX(), playerId);
+                        matrixCopy.get(pointToColor.getPosY()).set(pointToColor.getPosX(), playerId);
                     }
                     if (!isBadArea) {
-                        this.matrix.get(pointToColor.getY()).set(pointToColor.getX(), playerId);
+                        this.matrix.get(pointToColor.getPosY()).set(pointToColor.getPosX(), playerId);
                     }
                 }
             }

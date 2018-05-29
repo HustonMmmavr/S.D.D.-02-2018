@@ -77,20 +77,20 @@ public class Player extends GameObject {
         if (isOnCell) {
             offset %= DISTANCE;
             if (currentDirection == Direction.RIGHT) {
-                currentPosition.setX(currentPosition.getX() >= maxBorder
-                        ? maxBorder : currentPosition.getX() + 1);
+                currentPosition.setPosX(currentPosition.getPosX() >= maxBorder
+                        ? maxBorder : currentPosition.getPosX() + 1);
             }
             if (currentDirection == Direction.DOWN) {
-                currentPosition.setY(currentPosition.getY() >= maxBorder
-                        ? maxBorder : currentPosition.getY() + 1);
+                currentPosition.setPosY(currentPosition.getPosY() >= maxBorder
+                        ? maxBorder : currentPosition.getPosY() + 1);
             }
             if (currentDirection == Direction.LEFT) {
-                currentPosition.setX(currentPosition.getX() <= minBorder
-                        ? minBorder : currentPosition.getX() - 1);
+                currentPosition.setPosX(currentPosition.getPosX() <= minBorder
+                        ? minBorder : currentPosition.getPosX() - 1);
             }
             if (currentDirection == Direction.UP) {
-                currentPosition.setY(currentPosition.getY() <= minBorder
-                        ? minBorder : currentPosition.getY() - 1);
+                currentPosition.setPosY(currentPosition.getPosY() <= minBorder
+                        ? minBorder : currentPosition.getPosY() - 1);
             }
 
             if (newDirection != null && currentDirection != newDirection) {
@@ -119,7 +119,7 @@ public class Player extends GameObject {
         this.score = score;
     }
 
-    public void setDirection(Direction newDirection) {
+    public void setNewDirection(Direction newDirection) {
         this.newDirection = newDirection;
     }
 

@@ -3,37 +3,37 @@ package com.colorit.backend.game.gameobjects.math;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Point {
-    private int xPos;
-    private int yPos;
+    private int posX;
+    private int posY;
 
-    public Point(@JsonProperty("x") int xPos, @JsonProperty("y") int yPos) {
-        this.xPos = xPos;
-        this.yPos = yPos;
+    public Point(@JsonProperty("x") int posX, @JsonProperty("y") int posY) {
+        this.posX = posX;
+        this.posY = posY;
     }
 
-    public int getX() {
-        return xPos;
+    public int getPosX() {
+        return posX;
     }
 
-    public void setX(int xPos) {
-        this.xPos = xPos;
+    public void setPosX(int posX) {
+        this.posX = posX;
     }
 
-    public int getY() {
-        return yPos;
+    public int getPosY() {
+        return posY;
     }
 
-    public void setY(int yPos) {
-        this.yPos = yPos;
+    public void setPosY(int posY) {
+        this.posY = posY;
     }
 
     public void add(Point other) {
-        this.xPos += other.xPos;
-        this.yPos += other.yPos;
+        this.posX += other.posX;
+        this.posY += other.posY;
     }
 
     public void sub(Point other) {
-        this.xPos -= other.xPos;
-        this.yPos -= other.yPos;
+        this.posX -= other.posX;
+        this.posY -= other.posY;
     }
 }

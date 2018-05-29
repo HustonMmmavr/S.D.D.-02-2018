@@ -143,16 +143,16 @@ public class GameSession {
         return gameField;
     }
 
-    public void removeUser(Id<UserEntity> uId) {
-        users.remove(uId);
-        final Player player = playersMap.get(uId);
-        playersMap.remove(uId);
+    public void removeUser(Id<UserEntity> userId) {
+        users.remove(userId);
+        final Player player = playersMap.get(userId);
+        playersMap.remove(userId);
         players.remove(player);
     }
 
     public void changeDirection(Id<UserEntity> userId, Direction direction) {
         final Player player = playersMap.get(userId);
-        player.setDirection(direction);
+        player.setNewDirection(direction);
     }
 
     public int getFieldSize() {

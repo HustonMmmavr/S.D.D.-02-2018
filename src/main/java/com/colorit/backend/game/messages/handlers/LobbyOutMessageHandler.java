@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 public class LobbyOutMessageHandler {
-    private final static Logger LOGGER = LoggerFactory.getLogger(LobbyOutMessageHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LobbyOutMessageHandler.class);
     @NotNull
     private final RemotePointService remotePointService;
 
