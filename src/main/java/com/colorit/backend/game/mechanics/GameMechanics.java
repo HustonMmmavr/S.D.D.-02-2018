@@ -86,8 +86,6 @@ public class GameMechanics implements IGameMechanics {
         gameTaskScheduler.tick();
 
         // скорость если хотим ускорение
-//        final List<GameSession> sessionsToTerminate = new ArrayList<>();
-        final List<GameSession> sessionsToFinish = new ArrayList<>();
         final List<Lobby> lobbiesToFinish = new ArrayList<>();
         final List<Lobby> deadLobbies = new ArrayList<>();
         for (Lobby lobby : lobbyController.getLobbies()) {
@@ -106,35 +104,11 @@ public class GameMechanics implements IGameMechanics {
             } else {
                 lobbiesToFinish.add(lobby);
             }
-
-//            if (lobby.isFinished()) {
-//                lobbiesToFinish.add(lobby);
-//            }
-//             if (lobbyController.isLobbyAlive(lobby) && !lobby.isFinished()) {
-//                final GameSession gameSession = lobby.getAssociatedSession();
-//                if (gameSession.isFinised()) {
-//                    sessionsToFinish.add(gameSession);
-//                }
-//
-//                try {
-//                    if (gameSession.isPlaying()) {
-//                        gameSession.movePlayers(frameTime);
-//                        gameSession.subTime(frameTime);
-//                        serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
-//                    }
-//                } catch (RuntimeException ex) {
-//                    LOGGER.error("Failed to send snapshots, terminating the session", ex);
-//                    sessionsToTerminate.add(gameSession);
-//                }
-//            } else {
-//                deadLobbies.add(lobby);
-//            }
         }
 
         deadLobbies.forEach(lobbyController::removeLobby);
         lobbiesToFinish.forEach(lobbyController::reset);
 
-//        sessionsToFinish.forEach(GameSession::initMultiplayerSession); // resetLobby
         clientSnapshotService.reset();
         mechanicsTimeService.tick(frameTime);
     }

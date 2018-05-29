@@ -7,18 +7,17 @@ import com.colorit.backend.game.gameobjects.GameField;
 import com.colorit.backend.game.gameobjects.bonus.Bonus;
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.game.gameobjects.players.Player;
-import com.colorit.backend.game.lobby.Lobby;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.colorit.backend.game.GameConfig.FULL_PARTY;
 import static com.colorit.backend.game.GameConfig.MIN_BORDER;
 
 public class GameSession {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private static final int FULL_PARTY = 2;//4
     private List<Id<UserEntity>> users = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private HashMap<Id<UserEntity>, Player> playersMap = new HashMap<>();
@@ -50,7 +49,7 @@ public class GameSession {
     }
 
     public boolean isWaiting() {
-        return this.sessionStatus == Status.WAITING;//== St
+        return this.sessionStatus == Status.WAITING;
     }
 
     public void setReady() {
@@ -151,8 +150,8 @@ public class GameSession {
         players.remove(player);
     }
 
-    public void changeDirection(Id<UserEntity> uId, Direction direction) {
-        final Player player = playersMap.get(uId);
+    public void changeDirection(Id<UserEntity> userId, Direction direction) {
+        final Player player = playersMap.get(userId);
         player.setDirection(direction);
     }
 

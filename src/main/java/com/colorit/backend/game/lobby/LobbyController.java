@@ -65,8 +65,8 @@ public class LobbyController {
     public void showLobbies(Id<UserEntity> userId) {
         freeUsers.add(userId);
         final List<OneLobbyInfo> lobbiesList = new ArrayList<>();
-        for (Id<Lobby> lId : lobbiesMap.keySet()) {
-            final Lobby lobby = lobbiesMap.get(lId);
+        for (var lobbyId : lobbiesMap.keySet()) {
+            final Lobby lobby = lobbiesMap.get(lobbyId);
             if (lobby != null && lobby.isActive()) {
                 lobbiesList.add(new OneLobbyInfo(lobby));
             }
@@ -74,21 +74,21 @@ public class LobbyController {
         lobbyOutMessageHandler.sendMessageToUser(new Lobbies(lobbiesList), userId);
     }
 
-    public void init(Id<UserEntity> uId, LobbySettings lobbySettings) {
-        if (checkUserInLobby(uId)) {
+    public void init(Id<UserEntity> userId, LobbySettings lobbySettings) {
+        if (checkUserInLobby(userId)) {
             return;
         }
 
         final GameSession gameSession = gameSessionsController.createSession(lobbySettings.getFieldSize(),
                 lobbySettings.getGameTime());
-        gameSessionsController.addUser(uId, gameSession);
+        gameSessionsController.addUser(userId, gameSession);
 
-        final Lobby lobby = new Lobby(lobbySettings, uId, gameSession);
+        final Lobby lobby = new Lobby(lobbySettings, userId, gameSession);
         lobbiesMap.put(lobby.getId(), lobby);
         lobbies.add(lobby);
 
         trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
-        freeUsers.remove(uId);
+        freeUsers.remove(userId);
     }
 
     private void trySendMessageToFreeUsers(LobbyOutMessage message) {
