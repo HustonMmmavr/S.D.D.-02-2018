@@ -65,14 +65,17 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         final String nickname = (String) webSocketSession.getAttributes().get(SESSION_KEY);
-        final UserServiceResponse userServiceResponse = userService.getUserEntity(nickname);
-        Id<UserEntity> userId;
 
-        if (nickname == null || !userServiceResponse.isValid() || (userId = idMap.get(nickname)) == null) {
-            closeSessionSilently(webSocketSession, ACCESS_DENIED);
-            return;
+        if (nickname != null) {
+            final UserServiceResponse userServiceResponse = userService.getUserEntity(nickname);
+            final Id<UserEntity> userId = idMap.get(nickname);
+
+            if (!userServiceResponse.isValid() || userId == null) {
+                closeSessionSilently(webSocketSession, ACCESS_DENIED);
+                return;
+            }
+            handleMessage(userId, message);
         }
-        handleMessage(userId, message);
     }
 
     private void handleMessage(Id<UserEntity> userId, TextMessage text) {
@@ -111,6 +114,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
         try {
             session.close(status);
         } catch (Exception ignore) {
+            LOGGER.warn("Error close session silently");
         }
 
     }

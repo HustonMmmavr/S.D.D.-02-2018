@@ -7,14 +7,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class GameObject {
     private static final AtomicLong ID_GENERATOR = new AtomicLong();
-    protected final @NotNull Id<GameObject> id;
-
-    public GameObject() {
-        this.id = Id.of(ID_GENERATOR.incrementAndGet());
-    }
+    private final @NotNull Id<GameObject> id;
 
     public Id<?> getId() {
         return id;
+    }
+
+    public GameObject() {
+        this.id = Id.of(ID_GENERATOR.incrementAndGet());
     }
 
     public Snap<? extends GameObject> getSnap() {

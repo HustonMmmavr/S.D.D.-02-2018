@@ -10,15 +10,15 @@ import com.colorit.backend.game.gameobjects.math.Point;
 import static com.colorit.backend.game.GameConfig.*;
 
 public class Player extends GameObject {
-    protected String nickname;
-    protected Integer score;
-    protected int offset;
-    protected Direction currentDirection;
-    protected Direction newDirection;
-    protected Point currentPosition;
-    protected Integer velocity = DEFAULT_VELOCITY;
-    protected Id<Player> playerId;
-    protected boolean addScore;
+    private String nickname;
+    private Integer score;
+    private int offset;
+    private Direction currentDirection;
+    private Direction newDirection;
+    private Point currentPosition;
+    private Integer velocity = DEFAULT_VELOCITY;
+    private Id<Player> playerId;
+    private boolean addScore;
     private Id<UserEntity> userId;
 
 
@@ -77,20 +77,20 @@ public class Player extends GameObject {
         if (isOnCell) {
             offset %= DISTANCE;
             if (currentDirection == Direction.RIGHT) {
-                currentPosition.setX(currentPosition.getX() >= maxBorder ?
-                        maxBorder : currentPosition.getX() + 1);
+                currentPosition.setX(currentPosition.getX() >= maxBorder
+                        ? maxBorder : currentPosition.getX() + 1);
             }
             if (currentDirection == Direction.DOWN) {
-                currentPosition.setY(currentPosition.getY() >= maxBorder ?
-                        maxBorder : currentPosition.getY() + 1);
+                currentPosition.setY(currentPosition.getY() >= maxBorder
+                        ? maxBorder : currentPosition.getY() + 1);
             }
             if (currentDirection == Direction.LEFT) {
-                currentPosition.setX(currentPosition.getX() <= minBorder ?
-                        minBorder : currentPosition.getX() - 1);
+                currentPosition.setX(currentPosition.getX() <= minBorder
+                        ? minBorder : currentPosition.getX() - 1);
             }
             if (currentDirection == Direction.UP) {
-                currentPosition.setY(currentPosition.getY() <= minBorder ?
-                        minBorder : currentPosition.getY() - 1);
+                currentPosition.setY(currentPosition.getY() <= minBorder
+                        ? minBorder : currentPosition.getY() - 1);
             }
 
             if (newDirection != null && currentDirection != newDirection) {

@@ -27,8 +27,8 @@ public class GameField extends GameObject {
         }
     }
 
-    private void markCell(int i, int j, int id) {
-        this.matrix.get(i).set(j, id);
+    private void markCell(int iIdx, int jIdx, int id) {
+        this.matrix.get(iIdx).set(jIdx, id);
     }
 
     public void markCell(Point position, long id) {
@@ -100,8 +100,8 @@ public class GameField extends GameObject {
         */
 
         for (Point startPoint : checkArray) {
-            if (!((matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == SCORED) ||
-                    (matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == BAD_AREA))) {
+            if (!((matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == SCORED)
+                    || (matrixCopy.get(startPoint.getY()).get(startPoint.getX()) == BAD_AREA))) {
                 final LinkedList<Point> curAreaPoints = new LinkedList<>();
                 stack.addLast(startPoint);
                 boolean isBadArea = false;
@@ -112,8 +112,8 @@ public class GameField extends GameObject {
 
                     // if on edge => badArea
                     //noinspection OverlyComplexBooleanExpression
-                    if (!isBadArea && (curPoint.getY() == 0 || curPoint.getY() == matrixRank - 1) ||
-                            curPoint.getX() == 0 || curPoint.getX() == matrixRank - 1) {
+                    if (!isBadArea && (curPoint.getY() == 0 || curPoint.getY() == matrixRank - 1)
+                           || curPoint.getX() == 0 || curPoint.getX() == matrixRank - 1) {
                         isBadArea = true;
                     }
 

@@ -3,6 +3,8 @@ package com.colorit.backend.websocket;
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -17,37 +19,39 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RemotePointService {
     private final Map<Id<UserEntity>, WebSocketSession> sessions = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemotePointService.class);
 
     public RemotePointService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    public void registerUser(@NotNull Id<UserEntity> uId, @NotNull WebSocketSession webSocketSession) {
-        sessions.put(uId, webSocketSession);
+    public void registerUser(@NotNull Id<UserEntity> userId, @NotNull WebSocketSession webSocketSession) {
+        sessions.put(userId, webSocketSession);
     }
 
-    public boolean isConnected(@NotNull Id<UserEntity> uId) {//String nickname) {
-        return sessions.containsKey(uId) && sessions.get(uId).isOpen();
+    public boolean isConnected(@NotNull Id<UserEntity> userId) {
+        return sessions.containsKey(userId) && sessions.get(userId).isOpen();
     }
 
-    public void removeUser(@NotNull Id<UserEntity> uId) {
-        sessions.remove(uId);
+    public void removeUser(@NotNull Id<UserEntity> userId) {
+        sessions.remove(userId);
     }
 
-    public void cutDownConnection(@NotNull Id<UserEntity> uId, @NotNull CloseStatus closeStatus) {
-        final WebSocketSession webSocketSession = sessions.get(uId);
+    public void cutDownConnection(@NotNull Id<UserEntity> userId, @NotNull CloseStatus closeStatus) {
+        final WebSocketSession webSocketSession = sessions.get(userId);
         if (webSocketSession != null && webSocketSession.isOpen()) {
             try {
                 webSocketSession.close(closeStatus);
             } catch (IOException ignore) {
+                LOGGER.warn("error cut down connection");
             }
         }
     }
 
-    public void sendMessageToUser(@NotNull Id<UserEntity> uId, @NotNull Message message) throws IOException {
-        final WebSocketSession webSocketSession = sessions.get(uId);
+    public void sendMessageToUser(@NotNull Id<UserEntity> userId, @NotNull Message message) throws IOException {
+        final WebSocketSession webSocketSession = sessions.get(userId);
         if (webSocketSession == null) {
-            throw new IOException("no game websocket for user " + uId);
+            throw new IOException("no game websocket for user " + userId);
         }
         if (!webSocketSession.isOpen()) {
             throw new IOException("session is closed or not exsists");
