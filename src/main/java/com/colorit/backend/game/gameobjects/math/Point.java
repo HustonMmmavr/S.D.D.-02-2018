@@ -11,6 +11,7 @@ public class Point {
         this.posY = posY;
     }
 
+    @JsonProperty("x")
     public int getPosX() {
         return posX;
     }
@@ -19,6 +20,7 @@ public class Point {
         this.posX = posX;
     }
 
+    @JsonProperty("y")
     public int getPosY() {
         return posY;
     }

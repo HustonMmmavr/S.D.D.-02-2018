@@ -61,8 +61,20 @@ public class GameMechanics implements IGameMechanics {
     @Override
     public void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull ClientSnapshot clientSnap) {
         //tasks.add(() -> clientSnapshotService.pushClientSnap(userId, clientSnap));
+        //LOGGER.info("{}", clientSnap.getFrameTime());
+        //if (clientSnap.getDirection() != null) {
+        //      int c = 1;
+        //}
         final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
-        gameSession.changeDirection(userId, clientSnap.getDirection());
+        //if (clientSnap.getDirection() != null) {
+        //    gameSession.changeDirection(userId, clientSnap.getDirection());
+        //}
+
+        gameSession.movePlayer(userId, clientSnap.getFrameTime(), clientSnap.getDirection());
+        if (clientSnap.getDirection() != null) {
+            gameSession.changeDirection(userId, clientSnap.getDirection());
+        }
+        //gameSession.movePlayers(clientSnap.getFrameTime());
     }
 
     @Override
@@ -96,10 +108,8 @@ public class GameMechanics implements IGameMechanics {
             // fuck
             if (lobby.isPlaying() && !lobby.isFinished()) {
                 final GameSession gameSession = lobby.getAssociatedSession();
-                gameSession.movePlayers(frameTime);
                 gameSession.subTime(frameTime);
                 serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
-
                 // todo send info to users and delete dead users
             } else {
                 lobbiesToFinish.add(lobby);

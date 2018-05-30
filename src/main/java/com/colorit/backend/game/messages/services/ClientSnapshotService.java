@@ -35,8 +35,16 @@ public class ClientSnapshotService {
 
             playerSnaps.stream().filter(ClientSnapshot::isChanged)
                     .findFirst()
-                    .ifPresent(snap -> processDirectionChange(snap, gameSession, player));
+                    .ifPresent(snap -> process(snap, gameSession, player));
         }
+    }
+
+    private void process(@NotNull ClientSnapshot snap, @NotNull GameSession gameSession, @NotNull Player player) {
+        if (snap.getDirection() !=  null) {
+            player.setNewDirection(snap.getDirection());
+        }
+        gameSession.movePlayer(player.getUserId(), snap.getFrameTime(), snap.getDirection());
+        //player.move(snap.getFrameTime(), 0, gameSession.getFieldSize() - 1);
     }
 
     private void processDirectionChange(@NotNull ClientSnapshot snap, @NotNull GameSession gameSession,

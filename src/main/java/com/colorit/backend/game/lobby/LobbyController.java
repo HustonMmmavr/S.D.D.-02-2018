@@ -124,12 +124,16 @@ public class LobbyController {
     }
 
     private void trySendMessageToUsers(LobbyOutMessage message, Lobby lobby) {
-        for (var user : lobby.getUsers()) {
-            if (!lobbyOutMessageHandler.sendMessageToUser(message, user)) {
-                handleDeadUser(lobby, user);
+        // todo something concurrent
+        if (lobby != null) {
+            for (var user : lobby.getUsers()) {
+                if (!lobbyOutMessageHandler.sendMessageToUser(message, user)) {
+                    handleDeadUser(lobby, user);
+                }
             }
         }
     }
+
 
     private void trySendMessageToLobbyUser(LobbyOutMessage message, Lobby lobby, Id<UserEntity> user) {
         if (!lobbyOutMessageHandler.sendMessageToUser(message, user)) {

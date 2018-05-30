@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ClientSnapshot extends Message {
     private Direction direction;
+    private int velocity;
     private Point posititon;
     private long frameTime;
 
@@ -28,6 +29,7 @@ public class ClientSnapshot extends Message {
         this.posititon = posititon;
     }
 
+    @JsonProperty("clientTime")
     public long getFrameTime() {
         return frameTime;
     }
@@ -37,6 +39,7 @@ public class ClientSnapshot extends Message {
     }
 
     public boolean isChanged() {
-        return direction != null;
+        return true;
+        //return direction != null;
     }
 }

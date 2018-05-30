@@ -163,19 +163,35 @@ public class GameSession {
         return gameTime;
     }
 
-    public void movePlayers(long delay) {
-        players.forEach(player -> {
-            if (player.move((double) delay, MIN_BORDER, gameField.getRank() - 1)) {
-                gameField.markCell(player.getPosition(), player.getPlayerId().getId());
-                if (player.isAddScore()) {
-                    player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
-                    player.setAddScore(false);
-                } else {
-                    player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
-                }
+
+    public void movePlayer(Id<UserEntity> userId, long time, Direction direction) {
+        final Player player = playersMap.get(userId);
+        //player.setNewDirection(direction);
+        if (player.move((double) time, MIN_BORDER, gameField.getRank() - 1)) {
+            gameField.markCell(player.getPosition(), player.getPlayerId().getId());
+            if (player.isAddScore()) {
+                player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
+                player.setAddScore(false);
+            } else {
+                player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
             }
-        });
+        }
+        //player.move((double) time, MIN_BORDER, gameField.getRank() - 1);
     }
+
+    //public void movePlayers(long delay) {
+    //    players.forEach(player -> {
+    //       if (player.move((double) delay, MIN_BORDER, gameField.getRank() - 1)) {
+    //            gameField.markCell(player.getPosition(), player.getPlayerId().getId());
+    //            if (player.isAddScore()) {
+    //                player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
+    //                player.setAddScore(false);
+    //            } else {
+    //                player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
+    //            }
+    //        }
+    //    });
+    //}
 
     public void terminateSession() {
         gameSessionsController.forceTerminate(this, true);
