@@ -53,8 +53,8 @@ public class GameField extends GameObject {
     @SuppressWarnings("OverlyComplexBooleanExpression")
     private boolean isDotValidNoEdgeCheck(List<List<Integer>> fieldCopy, Point point, int playerId) {
         return (
-                (point.getPosX() > 0 && point.getPosX() <= this.matrixRank - 1) && // not on first or last col
-                        (point.getPosY() > 0 && point.getPosY() <= this.matrixRank - 1) && // not on first or last row
+                (point.getPosX() >= 0 && point.getPosX() <= this.matrixRank - 1) && // not on first or last col
+                        (point.getPosY() >= 0 && point.getPosY() <= this.matrixRank - 1) && // not on first or last row
                         (fieldCopy.get(point.getPosY()).get(point.getPosX()) != playerId) && // current player is not owner of cell
                         (fieldCopy.get(point.getPosY()).get(point.getPosX()) != SCORED) && // not marked as scored
                         (fieldCopy.get(point.getPosY()).get(point.getPosX()) != BAD_AREA) // not marked as bad area
