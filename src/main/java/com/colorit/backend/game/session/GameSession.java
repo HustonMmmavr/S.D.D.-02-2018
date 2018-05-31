@@ -187,17 +187,15 @@ public class GameSession {
 
     public void movePlayers(long delay) {
         players.forEach(player -> {
-             player.move(delay, MIN_BORDER, gameField.getRank() - 1);
-
-//           if (player.move(delay, MIN_BORDER, gameField.getRank() - 1)) {
-//                gameField.markCell(player.getPosition(), player.getPlayerId().getId());
-//                if (player.isAddScore()) {
-//                    player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
-//                    player.setAddScore(false);
-//                } else {
-//                    player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
-//                }
-//            }
+           if (player.move(delay, MIN_BORDER, gameField.getRank() - 1)) {
+                gameField.markCell(player.getPosition(), player.getPlayerId().getId());
+                if (player.isAddScore()) {
+                    player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
+                    player.setAddScore(false);
+                } else {
+                    player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
+                }
+            }
         });
     }
 

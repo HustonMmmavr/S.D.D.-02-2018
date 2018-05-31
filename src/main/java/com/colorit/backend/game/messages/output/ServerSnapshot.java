@@ -25,13 +25,6 @@ public class ServerSnapshot extends Message {
         this.gameFieldSnap = gameFieldSnap;
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-    public long getFrameTime() {
-        return frameTime;
-    }
-
     public static ServerSnapshot getSnapshot(GameSession gameSession, long frameTime) {
         final List<Player.PlayerSnap> playerSnaps = new ArrayList<>();
         final GameField.GameFieldSnap gameFieldSnap = gameSession.getGameField().getSnap();
@@ -51,5 +44,13 @@ public class ServerSnapshot extends Message {
 
     public List<Bonus.BonusSnap> getBonusesSnap() {
         return bonusesSnap;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public long getFrameTime() {
+        return frameTime;
     }
 }

@@ -72,7 +72,7 @@ public class Player extends GameObject {
 
     // ставить таску на бонус
     public boolean move(long timeDelay, int minBorder, int maxBorder) {
-        offset += (double)timeDelay / ONE_TIME_STEP * velocity;
+        offset += (double) timeDelay / ONE_TIME_STEP * velocity;
 
         if ((currentPosition.getPosX() == minBorder && currentDirection == Direction.LEFT)
             || (currentPosition.getPosX() == maxBorder && currentDirection == Direction.RIGHT)

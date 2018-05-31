@@ -65,15 +65,15 @@ public class GameMechanics implements IGameMechanics {
         //if (clientSnap.getDirection() != null) {
         //      int c = 1;
         //}
-        final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
+        //final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
         //if (clientSnap.getDirection() != null) {
         //    gameSession.changeDirection(userId, clientSnap.getDirection());
         //}
 
         //gameSession.movePlayer(userId, clientSnap.getFrameTime(), clientSnap.getDirection());
-        if (clientSnap.getDirection() != null) {
-            gameSession.changeDirection(userId, clientSnap.getDirection());
-        }
+        //if (clientSnap.getDirection() != null) {
+        //    gameSession.changeDirection(userId, clientSnap.getDirection());
+        // //}
         //gameSession.movePlayers(clientSnap.getFrameTime());
     }
 
@@ -94,10 +94,7 @@ public class GameMechanics implements IGameMechanics {
             clientSnapshotService.processSnapshotsFor(session);
         }
 
-
-
-
-        gameTaskScheduler.tick();
+        //gameTaskScheduler.tick();
 
         // скорость если хотим ускорение
         final List<Lobby> lobbiesToFinish = new ArrayList<>();

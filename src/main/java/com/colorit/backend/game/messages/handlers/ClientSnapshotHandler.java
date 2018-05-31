@@ -31,6 +31,6 @@ public class ClientSnapshotHandler extends MessageHandler<ClientSnapshot> {
 
     @Override
     public void handle(@NotNull ClientSnapshot clientSnapshot, @NotNull Id<UserEntity> forUser) {
-        //gameMechanics.addClientSnapshot(forUser, clientSnapshot);
+        gameMechanics.addClientSnapshot(forUser, clientSnapshot);
     }
 }
