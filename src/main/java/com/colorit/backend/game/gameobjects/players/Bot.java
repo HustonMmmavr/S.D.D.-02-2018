@@ -10,7 +10,7 @@ public class Bot extends Player {
     }
 
     @Override
-    public boolean move(double delay, int minBorder, int maxBorder) {
+    public boolean move(long delay, int minBorder, int maxBorder) {
         return true;
     }
 }

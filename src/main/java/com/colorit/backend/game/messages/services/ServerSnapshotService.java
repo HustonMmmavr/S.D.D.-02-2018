@@ -20,7 +20,7 @@ public class ServerSnapshotService {
 
     public void sendSnapshotsFor(@NotNull GameSession gameSession, long frameTime) {
 
-        final ServerSnapshot serverSnapshot = ServerSnapshot.getSnapshot(gameSession);
+        final ServerSnapshot serverSnapshot = ServerSnapshot.getSnapshot(gameSession, frameTime);
 
         //noinspection OverlyBroadCatchBlock
         try {

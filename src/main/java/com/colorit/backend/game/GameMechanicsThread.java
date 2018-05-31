@@ -12,10 +12,11 @@ import java.time.Clock;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static com.colorit.backend.game.GameConfig.ONE_TIME_STEP;
+
 @Service
 public class GameMechanicsThread implements Runnable {
     private static final @NotNull Logger LOGGER = LoggerFactory.getLogger(GameMechanicsThread.class);
-    private static final long STEP_TIME = 50;
 
     private final @NotNull GameMechanics gameMechanics;
 
@@ -43,7 +44,7 @@ public class GameMechanicsThread implements Runnable {
     }
 
     private void mainCycle() {
-        long lastFrameMillis = STEP_TIME;
+        long lastFrameMillis = ONE_TIME_STEP;
         while (true) {
             try {
                 final long before = clock.millis();
@@ -52,7 +53,7 @@ public class GameMechanicsThread implements Runnable {
 
                 final long after = clock.millis();
                 try {
-                    final long sleepingTime = Math.max(0, STEP_TIME - (after - before));
+                    final long sleepingTime = Math.max(0, ONE_TIME_STEP - (after - before));
                     Thread.sleep(sleepingTime);
                 } catch (InterruptedException e) {
                     LOGGER.error("Mechanics thread was interrupted", e);
