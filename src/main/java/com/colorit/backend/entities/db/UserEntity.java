@@ -60,7 +60,7 @@ public class UserEntity {
         return passwordHash;
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne//(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_results_id")
     public GameResults getGameResults() {
         return gameResults;

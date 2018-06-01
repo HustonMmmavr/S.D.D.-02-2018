@@ -37,6 +37,7 @@ public class UserRepositoryJpa {
 
     public void update(UserEntity updateEntity) {
         entityManager.merge(updateEntity);
+        entityManager.merge(updateEntity.getGameResults());
         entityManager.flush();
     }
 

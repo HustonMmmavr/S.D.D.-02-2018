@@ -8,20 +8,20 @@ import com.colorit.backend.game.gameobjects.bonus.Bonus;
 import com.colorit.backend.game.gameobjects.math.Point;
 import com.colorit.backend.game.gameobjects.players.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import static com.colorit.backend.game.GameConfig.FULL_PARTY;
+import static com.colorit.backend.game.GameConfig.MILISECONDS;
 import static com.colorit.backend.game.GameConfig.MIN_BORDER;
 
 public class GameSession {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
     private List<Id<UserEntity>> users = new CopyOnWriteArrayList<>();
     private List<Player> players = new ArrayList<>();
-    private HashMap<Id<UserEntity>, Player> playersMap = new HashMap<>();
+    private Map<Id<UserEntity>, Player> playersMap = new HashMap<>();
     private Id<GameSession> id;
     private GameField gameField;
     private final GameSessionsController gameSessionsController;
@@ -33,7 +33,7 @@ public class GameSession {
         id = Id.of(ID_GENERATOR.getAndIncrement());
         gameField = new GameField(fieldSize);
         sessionStatus = Status.WAITING;
-        this.gameTime = gameTime * 1000; //milisseconds
+        this.gameTime = gameTime * MILISECONDS;
         this.timePlaying = 0;
         this.gameSessionsController = gameSessionsController;
     }
@@ -86,9 +86,29 @@ public class GameSession {
         return id;
     }
 
-    public void resetSession() {
+    public void reset() {
         this.timePlaying = 0;
         this.sessionStatus = Status.WAITING;
+        this.players.clear();
+        this.playersMap.clear();
+    }
+
+    public Map<Id<UserEntity>, GameResults> getScores() {
+        final List<Player> sortedPlayers = players.stream()
+                .sorted(Comparator.comparing(Player::getScore)
+                        .reversed()).collect(Collectors.toList());
+
+        final HashMap<Id<UserEntity>, GameResults> scoresMap = new HashMap<>();
+        final Player winner = sortedPlayers.get(0);
+        sortedPlayers.remove(winner);
+        int score = 2;
+        scoresMap.put(winner.getUserId(), new GameResults(true, score--));
+
+        for (var player: sortedPlayers) {
+            scoresMap.put(player.getUserId(), new GameResults(false, score--));
+        }
+
+        return scoresMap;
     }
 
     public List<Id<UserEntity>> getUsers() {
@@ -191,7 +211,6 @@ public class GameSession {
     }
 
     public void movePlayer(Id<UserEntity> userId, long time, Direction direction) {
-        final Player player = playersMap.get(userId);
         movePlayer(playersMap.get(userId), time);
     }
 

@@ -30,4 +30,6 @@ public interface IUserService {
     UserServiceResponse userExists(String nickname);
 
     UserServiceResponse getUserEntity(String nickname);
+
+    UserServiceResponse updateGameResult(String nickname, boolean isWinner, Integer rating);
 }

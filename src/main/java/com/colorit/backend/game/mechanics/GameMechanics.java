@@ -83,18 +83,20 @@ public class GameMechanics implements IGameMechanics {
                 deadLobbies.add(lobby);
             }
 
-            if (lobby.isPlaying() && !lobby.isFinished()) {
-                final GameSession gameSession = lobby.getAssociatedSession();
-                gameSession.subTime(frameTime);
-                serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
-                // todo send info to users and delete dead users
+            if (!lobby.isFinished()) {
+                if (lobby.isPlaying()) {
+                    final GameSession gameSession = lobby.getAssociatedSession();
+                    gameSession.subTime(frameTime);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
+                    // todo send info to users and delete dead users
+                }
             } else {
                 lobbiesToFinish.add(lobby);
             }
         }
 
         deadLobbies.forEach(lobbyController::removeLobby);
-        lobbiesToFinish.forEach(lobbyController::reset);
+        lobbiesToFinish.forEach(lobbyController::finishLobbyGame);
 
         clientSnapshotService.reset();
         mechanicsTimeService.tick(frameTime);

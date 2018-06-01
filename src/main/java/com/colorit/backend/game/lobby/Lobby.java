@@ -2,10 +2,14 @@ package com.colorit.backend.game.lobby;
 
 import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
+import com.colorit.backend.game.session.GameResults;
 import com.colorit.backend.game.session.GameSession;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static com.colorit.backend.game.GameConfig.MILISECONDS;
 
 public class Lobby {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
@@ -16,9 +20,7 @@ public class Lobby {
 
     public enum State {
         WAITING,
-        READY,
-        GAME,
-        FINISHED
+        READY
     }
 
     public boolean isPlaying() {
@@ -41,10 +43,6 @@ public class Lobby {
         this.ownerId = user;
     }
 
-    public State getState() {
-        return state;
-    }
-
     public void setReady() {
         associatedSession.setReady();
     }
@@ -58,12 +56,16 @@ public class Lobby {
     }
 
 
+    public  void reset() {
+        associatedSession.reset();
+    }
+
     public int getFiledSize() {
         return associatedSession.getFieldSize();
     }
 
     public long getGameTime() {
-        return associatedSession.getGameTime() / 1000;
+        return associatedSession.getGameTime() / MILISECONDS;
     }
 
     public Id<UserEntity> getOwnerId() {
@@ -84,6 +86,10 @@ public class Lobby {
 
     public List<Id<UserEntity>> getUsers() {
         return associatedSession.getUsers();
+    }
+
+    public Map<Id<UserEntity>, GameResults> getScores() {
+        return associatedSession.getScores();
     }
 
     public boolean changeOwner() {

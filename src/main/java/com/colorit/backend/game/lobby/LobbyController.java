@@ -4,6 +4,7 @@ import com.colorit.backend.entities.Id;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.game.messages.handlers.LobbyOutMessageHandler;
 import com.colorit.backend.game.messages.output.*;
+import com.colorit.backend.game.session.GameResults;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.session.GameSession;
 import com.colorit.backend.services.IUserService;
@@ -58,8 +59,7 @@ public class LobbyController {
     }
 
     private boolean insureCandidate(@NotNull Id<UserEntity> candidate) {
-        return remotePointService.isConnected(candidate)
-                && userService.getUserEntity(candidate.getAdditionalInfo()) != null;
+        return remotePointService.isConnected(candidate);
     }
 
     public void showLobbies(Id<UserEntity> userId) {
@@ -110,8 +110,8 @@ public class LobbyController {
         final boolean isOwner = lobby.getOwnerId().equals(user);
         gameSessionsController.removeUser(user, lobby.getAssociatedSession());
         if (lobby.getUsers().size() == 0) {
+            lobby.getAssociatedSession().setDead();
             return;
-            //todo set lobby dead or not need
         }
 
         trySendMessageToUsers(new LobbyStateMessage(lobby.getId(), user,
@@ -124,7 +124,6 @@ public class LobbyController {
     }
 
     private void trySendMessageToUsers(LobbyOutMessage message, Lobby lobby) {
-        // todo something concurrent
         if (lobby != null) {
             for (var user : lobby.getUsers()) {
                 if (!lobbyOutMessageHandler.sendMessageToUser(message, user)) {
@@ -134,6 +133,17 @@ public class LobbyController {
         }
     }
 
+    public void finishLobbyGame(Lobby lobby) {
+        final List<Id<UserEntity>> users = lobby.getUsers();
+        final Map<Id<UserEntity>, GameResults> results = lobby.getScores();
+        // save user results
+        for (var user: users) {
+            final GameResults userResult = results.get(user);
+            userService.updateGameResult(user.getAdditionalInfo(), userResult.isWinner(), userResult.getRating());
+        }
+
+        reset(lobby);
+    }
 
     private void trySendMessageToLobbyUser(LobbyOutMessage message, Lobby lobby, Id<UserEntity> user) {
         if (!lobbyOutMessageHandler.sendMessageToUser(message, user)) {
@@ -236,7 +246,9 @@ public class LobbyController {
     }
 
     public void reset(Lobby lobby) {
-
+        lobby.reset();
+        // todo clear session and send messages to all users that game finished and their scores
+        // and set gamessession to waitit
     }
 
     public void removeUser(Id<Lobby> lobbyId, Id<UserEntity> userId) {
