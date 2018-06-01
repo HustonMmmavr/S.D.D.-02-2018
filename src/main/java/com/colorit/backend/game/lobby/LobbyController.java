@@ -206,7 +206,7 @@ public class LobbyController {
             final LobbyStateMessage message = new LobbyStateMessage(lobbyId, userId,
                     LobbyStateMessage.Action.CONNECTED);
             trySendMessageToUsers(message, lobby);
-            trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
+//            trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
             freeUsers.remove(userId);
             gameSessionsController.addUser(userId, lobby.getAssociatedSession());
 
@@ -268,7 +268,7 @@ public class LobbyController {
             trySendMessageToUsers(new LobbyStateMessage(lobbyId, userId, LobbyStateMessage.Action.DISCONNECTED), lobby);
         }
 
-        trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
+//        trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
         freeUsers.add(userId);
         gameSessionsController.removeUser(userId, lobby.getAssociatedSession());
     }
