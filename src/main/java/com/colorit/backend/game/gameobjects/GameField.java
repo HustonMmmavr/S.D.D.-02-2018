@@ -27,6 +27,15 @@ public class GameField extends GameObject {
         }
     }
 
+    public void clear() {
+        for (int i = 0; i < matrixRank; i++) {
+            for (int j = 0; j < matrixRank; j++) {
+                matrix.get(i).set(j, INITIAL_FIELD_VALUE);
+            }
+        }
+//        matrix.forEach(row -> row.forEach(cell -> cell = INITIAL_FIELD_VALUE));
+    }
+
     private void markCell(int idxI, int idxJ, int id) {
         this.matrix.get(idxI).set(idxJ, id);
     }

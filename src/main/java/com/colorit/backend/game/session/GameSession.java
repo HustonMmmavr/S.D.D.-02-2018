@@ -90,6 +90,7 @@ public class GameSession {
         this.timePlaying = 0;
         this.sessionStatus = Status.WAITING;
         this.players.clear();
+        gameField.clear();
         this.playersMap.clear();
     }
 
