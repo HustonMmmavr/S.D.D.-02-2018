@@ -202,7 +202,8 @@ public class GameSession {
         if (player.move(time, MIN_BORDER, gameField.getRank() - 1)) {
             gameField.markCell(player.getPosition(), player.getPlayerId().getId());
             if (player.isAddScore()) {
-                player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
+                player.setScore(player.getScore()
+                        + gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
                 player.setAddScore(false);
             } else {
                 player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));

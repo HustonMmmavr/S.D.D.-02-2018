@@ -190,6 +190,10 @@ public class LobbyController {
 
         final Lobby lobby = lobbiesMap.get(lobbyId);
 
+        if (lobby.isPlaying()) {
+            return;
+        }
+
         if (lobby.getUsers().size() >= FULL_PARTY) {
             lobbyOutMessageHandler.sendMessageToUser(new LobbyError("You cant join to lobby, its full"), userId);
             return;
@@ -245,7 +249,7 @@ public class LobbyController {
         }
     }
 
-    public void reset(Lobby lobby) {
+    private void reset(Lobby lobby) {
         lobby.reset();
         // todo clear session and send messages to all users that game finished and their scores
         // and set gamessession to waitit
