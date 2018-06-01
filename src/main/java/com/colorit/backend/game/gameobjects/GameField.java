@@ -33,7 +33,6 @@ public class GameField extends GameObject {
                 matrix.get(i).set(j, INITIAL_FIELD_VALUE);
             }
         }
-//        matrix.forEach(row -> row.forEach(cell -> cell = INITIAL_FIELD_VALUE));
     }
 
     private void markCell(int idxI, int idxJ, int id) {

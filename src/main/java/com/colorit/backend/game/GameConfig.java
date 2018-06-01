@@ -9,6 +9,6 @@ public class GameConfig {
     public static final int SCORED = 5;
     public static final int BAD_AREA = 6;
     public static final int DEFAULT_FIELD_VALUE = 0;
-    public static final int FULL_PARTY = 2;
+    public static final int FULL_PARTY = 4;
     public static final int MILISECONDS = 1000;
 }
