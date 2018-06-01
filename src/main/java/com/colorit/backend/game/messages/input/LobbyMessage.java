@@ -40,7 +40,6 @@ public class LobbyMessage extends Message {
         return settings;
     }
 
-
     // its need when we try connect to lobby
     @JsonProperty("id")
     public Long getLobbyId() {

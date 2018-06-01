@@ -114,6 +114,8 @@ public class LobbyController {
             return;
         }
 
+        trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
+
         trySendMessageToUsers(new LobbyStateMessage(lobby.getId(), user,
                 LobbyStateMessage.Action.DISCONNECTED), lobby);
         if (isOwner) {
@@ -204,6 +206,7 @@ public class LobbyController {
             final LobbyStateMessage message = new LobbyStateMessage(lobbyId, userId,
                     LobbyStateMessage.Action.CONNECTED);
             trySendMessageToUsers(message, lobby);
+            trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
             freeUsers.remove(userId);
             gameSessionsController.addUser(userId, lobby.getAssociatedSession());
 
@@ -265,6 +268,7 @@ public class LobbyController {
             trySendMessageToUsers(new LobbyStateMessage(lobbyId, userId, LobbyStateMessage.Action.DISCONNECTED), lobby);
         }
 
+        trySendMessageToFreeUsers(new OneLobbyInfo(lobby));
         freeUsers.add(userId);
         gameSessionsController.removeUser(userId, lobby.getAssociatedSession());
     }
