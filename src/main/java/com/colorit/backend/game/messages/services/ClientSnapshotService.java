@@ -33,9 +33,8 @@ public class ClientSnapshotService {
                 continue;
             }
 
-            playerSnaps.stream().filter(ClientSnapshot::isChanged)
-                    .findFirst()
-                    .ifPresent(snap -> process(snap, gameSession, player));
+            playerSnaps.forEach(snap -> process(snap, gameSession, player));
+            snaps.get(player.getUserId()).removeAll(playerSnaps);
         }
     }
 
@@ -44,13 +43,6 @@ public class ClientSnapshotService {
             player.setNewDirection(snap.getDirection());
         }
         gameSession.movePlayer(player.getUserId(), snap.getFrameTime(), snap.getDirection());
-        //player.move(snap.getFrameTime(), 0, gameSession.getFieldSize() - 1);
-    }
-
-    private void processDirectionChange(@NotNull ClientSnapshot snap, @NotNull GameSession gameSession,
-                                        @NotNull Player player) {
-        // or send user here;
-        gameSession.changeDirection(player.getUserId(), snap.getDirection());
     }
 
     public void clearForUser(Id<UserEntity> userId) {

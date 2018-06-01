@@ -11,6 +11,7 @@ import com.colorit.backend.game.gameobjects.players.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.colorit.backend.game.GameConfig.FULL_PARTY;
@@ -18,7 +19,7 @@ import static com.colorit.backend.game.GameConfig.MIN_BORDER;
 
 public class GameSession {
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private List<Id<UserEntity>> users = new ArrayList<>();
+    private List<Id<UserEntity>> users = new CopyOnWriteArrayList<>();
     private List<Player> players = new ArrayList<>();
     private HashMap<Id<UserEntity>, Player> playersMap = new HashMap<>();
     private Id<GameSession> id;
@@ -41,7 +42,8 @@ public class GameSession {
         WAITING,
         READY,
         PLAYING,
-        FINISHED
+        FINISHED,
+        DEAD
     }
 
     public void setWaiting() {
@@ -60,9 +62,13 @@ public class GameSession {
         return this.sessionStatus == Status.READY;
     }
 
-    //public void setFinished() {
-    //this.sessionStatus = Status.FINISHED;
-    //}
+    public boolean isDead() {
+        return this.sessionStatus == Status.DEAD;
+    }
+
+    public void setDead() {
+        this.sessionStatus = Status.DEAD;
+    }
 
     public boolean isFinished() {
         return this.sessionStatus == Status.FINISHED;
@@ -96,7 +102,6 @@ public class GameSession {
 
     public void runMechanics(long time) {
         movePlayers(time);
-
     }
 
     public void subTime(long time) {
@@ -105,7 +110,6 @@ public class GameSession {
 
     public boolean isFinised() {
         return gameTime < timePlaying;
-        //sessionStatus == Status.FINISHED;
     }
 
     public void addUser(Id<UserEntity> userId) {
@@ -154,6 +158,10 @@ public class GameSession {
         final Player player = playersMap.get(userId);
         playersMap.remove(userId);
         players.remove(player);
+
+        if (users.isEmpty()) {
+            this.sessionStatus = Status.DEAD;
+        }
     }
 
     public void changeDirection(Id<UserEntity> userId, Direction direction) {
@@ -170,9 +178,7 @@ public class GameSession {
     }
 
 
-    public void movePlayer(Id<UserEntity> userId, long time, Direction direction) {
-        final Player player = playersMap.get(userId);
-        //player.setNewDirection(direction);
+    private void movePlayer(Player player, long time) {
         if (player.move(time, MIN_BORDER, gameField.getRank() - 1)) {
             gameField.markCell(player.getPosition(), player.getPlayerId().getId());
             if (player.isAddScore()) {
@@ -182,21 +188,15 @@ public class GameSession {
                 player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
             }
         }
-        //player.move((double) time, MIN_BORDER, gameField.getRank() - 1);
     }
 
-    public void movePlayers(long delay) {
-        players.forEach(player -> {
-           if (player.move(delay, MIN_BORDER, gameField.getRank() - 1)) {
-                gameField.markCell(player.getPosition(), player.getPlayerId().getId());
-                if (player.isAddScore()) {
-                    player.setScore(gameField.countScoresForPlayer((int) player.getPlayerId().getId()));
-                    player.setAddScore(false);
-                } else {
-                    player.setAddScore(gameField.checkArea(player.getPosition(), (int) player.getPlayerId().getId()));
-                }
-            }
-        });
+    public void movePlayer(Id<UserEntity> userId, long time, Direction direction) {
+        final Player player = playersMap.get(userId);
+        movePlayer(playersMap.get(userId), time);
+    }
+
+    private void movePlayers(long time) {
+        players.forEach(player -> movePlayer(player, time));
     }
 
     public void terminateSession() {

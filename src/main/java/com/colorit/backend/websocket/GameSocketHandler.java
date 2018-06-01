@@ -105,6 +105,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
             LOGGER.warn("User disconnected but his session was not found (closeStatus=" + closeStatus + ')');
             return;
         }
+        closeSessionSilently(webSocketSession,  new CloseStatus(1000, "ok"));
         remotePointService.removeUser(idMap.get(nickname));
         idMap.remove(nickname);
     }

@@ -39,7 +39,6 @@ public class ClientSnapshot extends Message {
     }
 
     public boolean isChanged() {
-        return true;
-        //return direction != null;
+        return direction != null;
     }
 }

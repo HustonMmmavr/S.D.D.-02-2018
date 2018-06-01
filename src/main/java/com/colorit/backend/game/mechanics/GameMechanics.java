@@ -11,7 +11,6 @@ import com.colorit.backend.game.messages.services.ServerSnapshotService;
 import com.colorit.backend.game.session.GameSessionsController;
 import com.colorit.backend.game.messages.input.ClientSnapshot;
 import com.colorit.backend.game.session.GameSession;
-import com.colorit.backend.websocket.RemotePointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,6 @@ public class GameMechanics implements IGameMechanics {
 
     private final @NotNull GameSessionsController gameSessionsController;
 
-    private final @NotNull RemotePointService remotePointService;
-
     private final @NotNull ServerSnapshotService serverSnapshotService;
 
     private final @NotNull ClientSnapshotService clientSnapshotService;
@@ -43,13 +40,11 @@ public class GameMechanics implements IGameMechanics {
     private final @NotNull Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
 
     public GameMechanics(@NotNull GameSessionsController gameSessionsController,
-                         @NotNull RemotePointService remotePointService,
                          @NotNull ServerSnapshotService serverSnapshotService,
                          @NotNull ClientSnapshotService clientSnapshotService,
                          @NotNull MechanicsTimeService mechanicsTimeService,
                          @NotNull GameTaskScheduler gameTaskScheduler,
                          @NotNull LobbyController lobbyController) {
-        this.remotePointService = remotePointService;
         this.gameSessionsController = gameSessionsController;
         this.serverSnapshotService = serverSnapshotService;
         this.clientSnapshotService = clientSnapshotService;
@@ -61,20 +56,6 @@ public class GameMechanics implements IGameMechanics {
     @Override
     public void addClientSnapshot(@NotNull Id<UserEntity> userId, @NotNull ClientSnapshot clientSnap) {
         tasks.add(() -> clientSnapshotService.pushClientSnap(userId, clientSnap));
-        //LOGGER.info("{}", clientSnap.getFrameTime());
-        //if (clientSnap.getDirection() != null) {
-        //      int c = 1;
-        //}
-        //final GameSession gameSession = gameSessionsController.getGameUserSessions().get(userId);
-        //if (clientSnap.getDirection() != null) {
-        //    gameSession.changeDirection(userId, clientSnap.getDirection());
-        //}
-
-        //gameSession.movePlayer(userId, clientSnap.getFrameTime(), clientSnap.getDirection());
-        //if (clientSnap.getDirection() != null) {
-        //    gameSession.changeDirection(userId, clientSnap.getDirection());
-        // //}
-        //gameSession.movePlayers(clientSnap.getFrameTime());
     }
 
     @Override
@@ -94,8 +75,6 @@ public class GameMechanics implements IGameMechanics {
             clientSnapshotService.processSnapshotsFor(session);
         }
 
-        //gameTaskScheduler.tick();
-
         // скорость если хотим ускорение
         final List<Lobby> lobbiesToFinish = new ArrayList<>();
         final List<Lobby> deadLobbies = new ArrayList<>();
@@ -104,11 +83,8 @@ public class GameMechanics implements IGameMechanics {
                 deadLobbies.add(lobby);
             }
 
-            // fuck
             if (lobby.isPlaying() && !lobby.isFinished()) {
                 final GameSession gameSession = lobby.getAssociatedSession();
-
-                gameSession.runMechanics(frameTime);
                 gameSession.subTime(frameTime);
                 serverSnapshotService.sendSnapshotsFor(gameSession, frameTime);
                 // todo send info to users and delete dead users
