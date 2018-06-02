@@ -265,8 +265,10 @@ public class LobbyController {
         }
 
         final Lobby lobby = lobbiesMap.get(lobbyId);
+        final Id<UserEntity> deleteId = lobby.getUsers().stream()
+                .filter(userId::equals).findAny().orElse(userId);
         if (lobby.getUsers().contains(userId)) {
-            trySendMessageToUsers(new LobbyStateMessage(lobbyId, userId, LobbyStateMessage.Action.DISCONNECTED), lobby);
+            trySendMessageToUsers(new LobbyStateMessage(lobbyId, deleteId, LobbyStateMessage.Action.DISCONNECTED), lobby);
         }
 
         freeUsers.add(userId);
