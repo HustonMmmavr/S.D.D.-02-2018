@@ -41,8 +41,8 @@ public class LobbyHandler extends MessageHandler<LobbyMessage> {
             case CHAT:
                 break;
             case DISCONNECT:
-                final Id<UserEntity> userId = message.getUserId() == null ? forUser :
-                        Id.of(message.getUserId());
+                final Id<UserEntity> userId = message.getUserId() == null ? forUser
+                        : Id.of(message.getUserId());
                 lobbyController.removeUser(Id.of(message.getLobbyId()), userId);
                 break;
             case START:
