@@ -37,6 +37,7 @@ public class UserRepositoryJpa {
 
     public void update(UserEntity updateEntity) {
         entityManager.merge(updateEntity);
+        entityManager.merge(updateEntity.getGameResults());
         entityManager.flush();
     }
 
@@ -67,7 +68,7 @@ public class UserRepositoryJpa {
     }
 
     public void save(UserEntity userEntity) {
-        GameResults gameResults = new GameResults();
+        final GameResults gameResults = new GameResults();
         entityManager.persist(userEntity);
         entityManager.persist(gameResults);
         userEntity.setGameResults(gameResults);

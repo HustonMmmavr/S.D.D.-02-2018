@@ -60,7 +60,7 @@ public class UserEntity {
         return passwordHash;
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne//(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_results_id")
     public GameResults getGameResults() {
         return gameResults;
@@ -140,5 +140,11 @@ public class UserEntity {
                 view.getEmail(),
                 view.getPassword()
         );
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        return sb.append("{\"nickname\": ").append(nickname).append(" ").append("\"id\": ").append(id).append("}").toString();
     }
 }

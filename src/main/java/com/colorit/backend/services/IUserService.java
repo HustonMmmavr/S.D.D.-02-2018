@@ -28,4 +28,8 @@ public interface IUserService {
     UserServiceResponse getUsers(Integer limit, Integer offset);
 
     UserServiceResponse userExists(String nickname);
+
+    UserServiceResponse getUserEntity(String nickname);
+
+    UserServiceResponse updateGameResult(String nickname, boolean isWinner, Integer rating);
 }

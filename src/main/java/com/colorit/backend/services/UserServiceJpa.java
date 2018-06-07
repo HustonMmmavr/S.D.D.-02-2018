@@ -1,5 +1,6 @@
 package com.colorit.backend.services;
 
+import com.colorit.backend.entities.db.GameResults;
 import com.colorit.backend.entities.db.UserEntity;
 import com.colorit.backend.entities.input.UserUpdateEntity;
 import com.colorit.backend.repositories.UserRepositoryJpa;
@@ -23,6 +24,17 @@ public class UserServiceJpa implements IUserService {
     public UserServiceJpa(@NotNull PasswordEncoder passwordEncoder, @NotNull UserRepositoryJpa userRepositoryJpa) {
         this.passwordEncoder = passwordEncoder;
         this.userRepositoryJpa = userRepositoryJpa;
+    }
+
+    @Override
+    public UserServiceResponse getUserEntity(String nickname) {
+        if (userRepositoryJpa.existsByNickname(nickname)) {
+            final UserEntity userEntity = userRepositoryJpa.getByNickname(nickname);
+            LOGGER.info("info returned about user {}", nickname);
+            return new UserServiceResponse<>(UserServiceStatus.OK_STATE, userEntity);
+        } else {
+            return new UserServiceResponse(UserServiceStatus.NOT_FOUND_STATE);
+        }
     }
 
     @Override
@@ -139,5 +151,19 @@ public class UserServiceJpa implements IUserService {
     public UserServiceResponse getPosition(String nickname) {
         final UserEntity existingEntity = userRepositoryJpa.getByNickname(nickname);
         return new UserServiceResponse<>(UserServiceStatus.OK_STATE, userRepositoryJpa.getPosition(nickname));
+    }
+
+
+    @Override
+    public UserServiceResponse updateGameResult(String nickname, boolean isWinner, Integer rating) {
+        final UserEntity existingEntity = userRepositoryJpa.getByNickname(nickname);
+        GameResults gameResults = existingEntity.getGameResults();
+        gameResults.setCountGames(gameResults.getCountGames() + 1);
+        if (isWinner) {
+            gameResults.setCountWins(gameResults.getCountWins() + 1);
+        }
+        gameResults.setRating(gameResults.getRating() + rating);
+        userRepositoryJpa.update(existingEntity);
+        return new UserServiceResponse(UserServiceStatus.OK_STATE);
     }
 }
